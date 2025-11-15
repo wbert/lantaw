@@ -25,62 +25,51 @@ export function Layout({
   children,
 }: PageLayoutProps) {
   const routeLoading = useRouteLoading();
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* ---------------------- HEADER ---------------------- */}
-
       <header className="w-full bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40 sticky top-0 z-50">
-        <div
-          className="
-      max-w-7xl mx-auto px-4 py-3 
-      grid grid-cols-3 items-center gap-4
-  "
-        >
-          {/* LEFT */}
-          <div className="justify-self-start">
-            <Link
-              href="/"
-              className="text-lg font-semibold hover:opacity-80 transition"
-            >
-              <div className="flex items-center gap-1">
-                <Image
-                  src="/logo.svg"
-                  alt="Lantaw"
-                  width={40}
-                  height={40}
-                  className="invert dark:invert-0"
-                />
-                Lantaw
-              </div>
-            </Link>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
+          {/* LEFT — LOGO */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-lg font-semibold hover:opacity-80 transition"
+          >
+            <Image
+              src="/logo.svg"
+              alt="Lantaw"
+              width={40}
+              height={40}
+              className="invert dark:invert-0"
+            />
+            <span className="hidden sm:inline">Lantaw</span>
+          </Link>
 
-          {/* CENTER */}
-          <div className="hidden md:block w-full max-w-md justify-self-center">
+          {/* CENTER — SEARCH BAR (fills remaining space) */}
+          <div className="flex-1">
+            {/* Make sure SearchBar uses w-full internally */}
             <SearchBar />
           </div>
 
-          {/* RIGHT */}
-          <nav className="flex items-center justify-self-end gap-4 text-sm">
+          {/* RIGHT — NAV + THEME */}
+          <nav className="flex items-center gap-4 text-sm">
+            {/* Hide nav links on small screens, keep theme toggle */}
             <Link
               href="/movies"
-              className="hover:text-primary transition-colors"
+              className="hidden md:inline-block hover:text-primary transition-colors"
             >
               Movies
             </Link>
             <Link
               href="/series"
-              className="hover:text-primary transition-colors"
+              className="hidden md:inline-block hover:text-primary transition-colors"
             >
               TV Shows
             </Link>
+
             <ThemeToggle />
           </nav>
-        </div>
-
-        {/* Mobile Search */}
-        <div className="md:hidden px-4 pb-3">
-          <SearchBar />
         </div>
       </header>
 
@@ -121,7 +110,6 @@ export function Layout({
       {/* ---------------------- MAIN CONTENT ---------------------- */}
       <main className="flex-1 w-full">
         {children}
-
         <GlobalLoader isLoading={routeLoading} />
       </main>
 
