@@ -223,11 +223,6 @@ export default function TVMirrorPlayer({
           />
         </div>
 
-        <p className="text-xs text-muted-foreground">
-          This is a <strong>dummy TV mirror player</strong> using third-party
-          iframe sources for testing purposes only.
-        </p>
-
         {/* META / OVERVIEW */}
         <section className="space-y-3">
           <div className="flex flex-wrap items-center gap-3 text-sm md:text-base text-muted-foreground">
