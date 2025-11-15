@@ -69,7 +69,7 @@ services:
     build:
       context: ./be
       dockerfile: Dockerfile.prod
-      target: prod
+      target: runner
     container_name: nest-api
     restart: unless-stopped
     env_file: .env
