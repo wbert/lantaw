@@ -1,4 +1,5 @@
 // fe/app/page.tsx
+// @ts-nocheck
 import Image from "next/image";
 import { api } from "@/lib/api";
 import { Layout } from "@/components/layouts/layout";

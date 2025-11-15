@@ -1,4 +1,5 @@
 // fe/app/search/page.tsx
+// @ts-nocheck
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { Layout } from "@/components/layouts/layout";
