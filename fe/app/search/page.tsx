@@ -1,5 +1,6 @@
 // fe/app/search/page.tsx
 // @ts-nocheck
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { Layout } from "@/components/layouts/layout";

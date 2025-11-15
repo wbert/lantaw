@@ -1,4 +1,5 @@
 // app/tv/[id]/page.tsx
+export const dynamic = "force-dynamic";
 import { api } from "@/lib/api";
 import TVDetails from "@/components/tv-details";
 

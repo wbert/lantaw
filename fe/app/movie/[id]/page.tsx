@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { api } from "@/lib/api";
 import MovieDetails from "@/components/movie-details";
 import { Layout } from "@/components/layouts/layout";
