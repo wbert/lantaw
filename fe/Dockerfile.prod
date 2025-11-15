@@ -1,0 +1,52 @@
+# ===========================================
+# 1. Install dependencies (production only)
+# ===========================================
+FROM node:20-alpine AS deps
+
+WORKDIR /app
+
+COPY package*.json ./
+
+# Install only prod dependencies
+RUN npm ci --omit=dev --no-audit --no-fund
+
+
+# ===========================================
+# 2. Build the Next.js standalone bundle
+# ===========================================
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY --from=deps /app/node_modules ./node_modules
+
+COPY . .
+
+# Build with standalone output
+RUN npm run build
+
+
+# ===========================================
+# 3. Production Runtime (Slim)
+# ===========================================
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Copy standalone server
+COPY --from=builder /app/.next/standalone ./
+
+# Copy static assets
+COPY --from=builder /app/.next/static ./.next/static
+
+# Copy public folder for assets
+COPY --from=builder /app/public ./public
+
+# Next.js server.js handles routing
+EXPOSE 3000
+
+CMD ["node", "server.js"]

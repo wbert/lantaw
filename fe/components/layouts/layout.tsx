@@ -1,0 +1,139 @@
+"use client";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import Image from "next/image";
+import { SearchBar } from "../search-bar";
+import { ThemeToggle } from "../theme-toggle";
+import { GlobalLoader } from "@/components/global-loader";
+import { useRouteLoading } from "@/components/use-route-loading";
+
+type PageLayoutProps = {
+  title?: string;
+  subtitle?: string;
+  backHref?: string;
+  backLabel?: string;
+  actions?: ReactNode;
+  children: ReactNode;
+};
+
+export function Layout({
+  title,
+  subtitle,
+  backHref,
+  backLabel = "Back",
+  actions,
+  children,
+}: PageLayoutProps) {
+  const routeLoading = useRouteLoading();
+  return (
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      {/* ---------------------- HEADER ---------------------- */}
+
+      <header className="w-full bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40 sticky top-0 z-50">
+        <div
+          className="
+      max-w-7xl mx-auto px-4 py-3 
+      grid grid-cols-3 items-center gap-4
+  "
+        >
+          {/* LEFT */}
+          <div className="justify-self-start">
+            <Link
+              href="/"
+              className="text-lg font-semibold hover:opacity-80 transition"
+            >
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/logo.svg"
+                  alt="Lantaw"
+                  width={40}
+                  height={40}
+                  className="invert dark:invert-0"
+                />
+                Lantaw
+              </div>
+            </Link>
+          </div>
+
+          {/* CENTER */}
+          <div className="hidden md:block w-full max-w-md justify-self-center">
+            <SearchBar />
+          </div>
+
+          {/* RIGHT */}
+          <nav className="flex items-center justify-self-end gap-4 text-sm">
+            <Link
+              href="/movies"
+              className="hover:text-primary transition-colors"
+            >
+              Movies
+            </Link>
+            <Link
+              href="/series"
+              className="hover:text-primary transition-colors"
+            >
+              TV Shows
+            </Link>
+            <ThemeToggle />
+          </nav>
+        </div>
+
+        {/* Mobile Search */}
+        <div className="md:hidden px-4 pb-3">
+          <SearchBar />
+        </div>
+      </header>
+
+      {/* ---------------------- PAGE TITLE ROW ---------------------- */}
+      {(title || backHref || actions || subtitle) && (
+        <section className="max-w-7xl mx-auto w-full px-4 pt-6 pb-4 border-b space-y-3">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div className="space-y-1">
+              {backHref && (
+                <Link
+                  href={backHref}
+                  className="text-xs text-muted-foreground hover:text-primary transition"
+                >
+                  ← {backLabel}
+                </Link>
+              )}
+
+              {title && (
+                <h1 className="text-xl md:text-2xl font-semibold leading-tight">
+                  {title}
+                </h1>
+              )}
+
+              {subtitle && (
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+
+            {actions && (
+              <div className="flex items-center gap-2">{actions}</div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ---------------------- MAIN CONTENT ---------------------- */}
+      <main className="flex-1 w-full">
+        {children}
+
+        <GlobalLoader isLoading={routeLoading} />
+      </main>
+
+      {/* ---------------------- FOOTER ---------------------- */}
+      <footer className="border-t py-6 text-center text-muted-foreground text-xs">
+        <div className="max-w-7xl mx-auto">
+          <p>Built with ❤️ | Lantaw</p>
+          <p className="mt-1 opacity-70">
+            This site uses TMDB but is not endorsed or certified by TMDB.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
