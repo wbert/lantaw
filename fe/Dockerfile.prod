@@ -25,13 +25,11 @@ ENV NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE}
 ENV API_BASE_INTERNAL=${API_BASE_INTERNAL}
 
 COPY package*.json ./
-COPY --from=deps /app/node_modules ./node_modules
+RUN npm install --no-audit --no-fund
 
 COPY . .
 
-# Build with standalone output
 RUN npm run build
-
 
 # ===========================================
 # 3. Production Runtime (Slim)

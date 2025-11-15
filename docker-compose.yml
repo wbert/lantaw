@@ -54,12 +54,15 @@ services:
       context: ./fe
       dockerfile: Dockerfile.prod
       target: runner
+      args:
+        NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-/api}
+        API_BASE_INTERNAL: ${API_BASE_INTERNAL:-http://be:8080}
     container_name: next-web
     restart: unless-stopped
     env_file: .env
     environment:
-      NEXT_PUBLIC_API_BASE: /api
-      API_BASE_INTERNAL: http://be:8080
+      NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-/api}
+      API_BASE_INTERNAL: ${API_BASE_INTERNAL:-http://be:8080}
     depends_on:
       - be
     expose:

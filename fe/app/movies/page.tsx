@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { api } from "@/lib/api";
 import MediaGrid from "@/components/media-grid";
 import { Layout } from "@/components/layouts/layout";
