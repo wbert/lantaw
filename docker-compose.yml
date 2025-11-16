@@ -73,6 +73,9 @@ services:
       context: ./be
       dockerfile: Dockerfile.prod
       target: prod
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     container_name: nest-api
     restart: unless-stopped
     env_file: .env
