@@ -34,7 +34,6 @@ export default async function HomePage() {
   return (
     <Layout>
       <div className="space-y-8">
-        {/* HERO – smaller height + real content */}
         <section className="relative w-full h-[220px] md:h-[280px] overflow-hidden bg-muted">
           {hero?.backdrop_path && (
             <Image
@@ -46,7 +45,6 @@ export default async function HomePage() {
             />
           )}
 
-          {/* gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-background/10" />
 
           <div className="relative h-full flex items-center md:items-end">
@@ -66,7 +64,6 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* POPULAR MOVIES */}
         <div className="mx-auto max-w-6xl px-4 md:px-6 py-6 space-y-6">
           <MediaGrid
             title="Popular Movies"
@@ -75,7 +72,6 @@ export default async function HomePage() {
           />
         </div>
 
-        {/* POPULAR TV SHOWS */}
         <div className="mx-auto max-w-6xl px-4 md:px-6 py-6 space-y-6">
           <MediaGrid
             title="Popular TV Shows"

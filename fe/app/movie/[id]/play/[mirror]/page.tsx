@@ -101,7 +101,6 @@ export default async function MovieMirrorPage({ params }: PageProps) {
             </Button>
           </div>
 
-          {/* PLAYER + SHORT META */}
           <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             {/* Player */}
             <div className="aspect-video w-full rounded-xl overflow-hidden bg-black border border-border/60">
@@ -115,7 +114,6 @@ export default async function MovieMirrorPage({ params }: PageProps) {
               />
             </div>
 
-            {/* Side meta */}
             <div className="space-y-3 text-sm text-muted-foreground">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 Now Playing

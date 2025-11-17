@@ -108,10 +108,7 @@ export function Layout({
       )}
 
       {/* ---------------------- MAIN CONTENT ---------------------- */}
-      <main className="flex-1 w-full">
-        {children}
-        <GlobalLoader isLoading={routeLoading} />
-      </main>
+      <main className="flex-1 w-full">{children}</main>
 
       {/* ---------------------- FOOTER ---------------------- */}
       <footer className="border-t py-6 text-center text-muted-foreground text-xs">
