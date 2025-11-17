@@ -1,6 +1,4 @@
-"use client";
-
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +10,8 @@ type SearchBarProps = {
   className?: string;
 };
 
-export function SearchBar({
+// Internal component that uses useSearchParams
+function SearchBarContent({
   placeholder = "Search movies, TV shows...",
   className,
 }: SearchBarProps) {
@@ -45,15 +44,45 @@ export function SearchBar({
         placeholder={placeholder}
         className="w-full rounded-full pr-24 text-sm"
       />
-
       <Button
         type="submit"
         size="sm"
-        className="absolute right-0.5 top-1/2 -translate-y-1/2 rounded-full px-4 "
+        className="absolute right-0.5 top-1/2 -translate-y-1/2 rounded-full px-4"
       >
         <SearchIcon className="h-4 w-4" />
         <span className="hidden sm:inline">Search</span>
       </Button>
     </form>
+  );
+}
+
+// Main export with Suspense boundary
+export function SearchBar(props: SearchBarProps) {
+  return (
+    <Suspense
+      fallback={
+        <form
+          className={cn("relative flex items-center w-full", props.className)}
+        >
+          <Input
+            type="search"
+            placeholder={props.placeholder}
+            className="w-full rounded-full pr-24 text-sm"
+            disabled
+          />
+          <Button
+            type="submit"
+            size="sm"
+            className="absolute right-0.5 top-1/2 -translate-y-1/2 rounded-full px-4"
+            disabled
+          >
+            <SearchIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Search</span>
+          </Button>
+        </form>
+      }
+    >
+      <SearchBarContent {...props} />
+    </Suspense>
   );
 }
