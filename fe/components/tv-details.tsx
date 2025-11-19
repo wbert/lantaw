@@ -131,7 +131,7 @@ export default function TVDetails({
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
                   {details.name}{" "}
                   {firstAirYear && (
-                    <span className="text-muted-foreground text-2xl md:text-3xl">
+                    <span className="flex text-muted-foreground text-2xl md:text-3xl">
                       ({airLabel})
                     </span>
                   )}

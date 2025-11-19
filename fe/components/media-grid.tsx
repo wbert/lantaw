@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Film, Tv, Calendar } from "lucide-react";
+import { Film, Tv, Calendar, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type MediaItem = {
@@ -78,9 +78,7 @@ export default function MediaGrid({
             item.release_date?.slice(0, 4) ||
             item.first_air_date?.slice(0, 4) ||
             "";
-          const rating = item.vote_average
-            ? (item.vote_average / 10) * 100
-            : null;
+          const rating = item.vote_average ? item.vote_average : null;
 
           return (
             <Link
@@ -102,10 +100,11 @@ export default function MediaGrid({
                   />
                   {rating && (
                     <Badge
-                      variant={rating >= 70 ? "default" : "secondary"}
+                      variant={rating >= 7 ? "default" : "secondary"}
                       className="absolute top-2 right-2 text-xs font-semibold shadow-md"
                     >
-                      {Math.round(rating)}%
+                      <Star className="h-3 w-3" />
+                      {rating.toFixed(1)}
                     </Badge>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />

@@ -8,6 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
+// ⬇️ NEW: import shadcn Select
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 type TmdbGenre = {
   id: number;
   name: string;
@@ -153,9 +162,9 @@ export default function TVMirrorPlayer({
               {activeMirror.label} · TV
             </p>
             <h1 className="text-2xl md:text-3xl font-semibold">
-              {details.name}{" "}
+              {details.name}
               {airLabel && (
-                <span className="text-muted-foreground text-lg md:text-xl ml-1.5">
+                <span className="flex text-muted-foreground text-lg md:text-xl">
                   ({airLabel})
                 </span>
               )}
@@ -183,7 +192,7 @@ export default function TVMirrorPlayer({
           </div>
 
           <Button variant="ghost" size="sm" asChild>
-            <Link href={`/tv/${tvId}`}>← Back to TV details</Link>
+            <Link href={`/tv/${tvId}`}>← Back</Link>
           </Button>
         </div>
 
@@ -226,11 +235,7 @@ export default function TVMirrorPlayer({
         {/* META / OVERVIEW */}
         <section className="space-y-3">
           <div className="flex flex-wrap items-center gap-3 text-sm md:text-base text-muted-foreground">
-            {genres && (
-              <>
-                <span>{genres}</span>
-              </>
-            )}
+            {genres && <span>{genres}</span>}
           </div>
 
           {details.overview && (
@@ -272,19 +277,27 @@ export default function TVMirrorPlayer({
               )}
             </div>
 
+            {/* ⬇️ CHANGED: Season picker is now a Select */}
             <div className="flex flex-wrap gap-2">
-              {playableSeasons.map((s) => (
-                <Button
-                  key={s.season_number}
-                  type="button"
-                  size="sm"
-                  variant={s.season_number === season ? "default" : "outline"}
-                  className="rounded-full px-3 py-1 text-xs md:text-sm"
-                  onClick={() => setSeason(s.season_number)}
-                >
-                  S{s.season_number} ({s.episode_count})
-                </Button>
-              ))}
+              <Select
+                value={season.toString()}
+                onValueChange={(value) => setSeason(parseInt(value, 10))}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select season" />
+                </SelectTrigger>
+                <SelectContent>
+                  {playableSeasons.map((s) => (
+                    <SelectItem
+                      key={s.season_number}
+                      value={s.season_number.toString()}
+                    >
+                      Season {s.season_number} ({s.episode_count} ep
+                      {s.episode_count > 1 ? "s" : ""})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

@@ -97,7 +97,7 @@ export default async function MovieMirrorPage({ params }: PageProps) {
             </div>
 
             <Button variant="ghost" size="sm" asChild>
-              <Link href={`/movie/${id}`}>← Back to details</Link>
+              <Link href={`/movie/${id}`}>← Back</Link>
             </Button>
           </div>
 
