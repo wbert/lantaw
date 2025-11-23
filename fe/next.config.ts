@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: "standalone", // <-- REQUIRED for standalone Docker builds
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+});
 
+const nextConfig = {
+  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -10,6 +15,13 @@ const nextConfig = {
       },
     ],
   },
+  reactStrictMode: false,
+  // Remove swcMinify - it's deprecated
+  experimental: {
+    webpackBuildWorker: true,
+  },
+  // Add empty turbopack config to silence the warning
+  turbopack: {},
 };
 
-module.exports = nextConfig;
+module.exports = withPWA(nextConfig);
