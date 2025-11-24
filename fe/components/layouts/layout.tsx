@@ -1,11 +1,9 @@
 "use client";
 import Link from "next/link";
-import type { ReactNode } from "react";
 import Image from "next/image";
 import { SearchBar } from "../search-bar";
 import { ThemeToggle } from "../theme-toggle";
-import { GlobalLoader } from "@/components/global-loader";
-import { useRouteLoading } from "@/components/use-route-loading";
+import { BrowseSheetTrigger } from "@/components/browse-sheet-trigger";
 
 type PageLayoutProps = {
   title?: string;
@@ -24,8 +22,6 @@ export function Layout({
   actions,
   children,
 }: PageLayoutProps) {
-  const routeLoading = useRouteLoading();
-
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* ---------------------- HEADER ---------------------- */}
@@ -48,7 +44,6 @@ export function Layout({
 
           {/* CENTER — SEARCH BAR (fills remaining space) */}
           <div className="flex-1">
-            {/* Make sure SearchBar uses w-full internally */}
             <SearchBar />
           </div>
 
@@ -68,6 +63,12 @@ export function Layout({
               TV Shows
             </Link>
 
+            {/* BROWSE SHEET (genre/language filters) */}
+            <div className="hidden md:inline-block">
+              <BrowseSheetTrigger />
+            </div>
+
+            {/* On mobile you can later turn this into a full-screen sheet if you want */}
             <ThemeToggle />
           </nav>
         </div>

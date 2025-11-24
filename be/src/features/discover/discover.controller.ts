@@ -1,3 +1,4 @@
+// src/v1/controllers/discover.controller.ts
 import { Controller, Get, Query } from '@nestjs/common';
 import { DiscoverService } from '../discover.service';
 
@@ -8,8 +9,10 @@ export class DiscoverController {
   @Get()
   list(
     @Query('type') type: 'movie' | 'tv' = 'movie',
-    @Query('page') q: Record<string, string>,
+    @Query() allParams: Record<string, string>,
   ) {
-    return this.svc.list(type, q);
+    const { type: _, ...queryParams } = allParams;
+
+    return this.svc.list(type, queryParams);
   }
 }
