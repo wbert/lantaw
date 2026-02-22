@@ -1,4 +1,3 @@
-// fe/app/movies/page.tsx
 // @ts-nocheck
 export const dynamic = "force-dynamic";
 
@@ -7,7 +6,7 @@ import { api } from "@/lib/api";
 import MediaGrid from "@/components/media-grid";
 import { Layout } from "@/components/layouts/layout";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 
 export const revalidate = 60;
 
@@ -26,7 +25,6 @@ type PageProps = {
 
 export default async function MoviesHome({ searchParams }: PageProps) {
   const params = await searchParams;
-
   const page = Number(params.page ?? "1") || 1;
 
   const data = await api<MovieResponse>(
@@ -36,59 +34,56 @@ export default async function MoviesHome({ searchParams }: PageProps) {
   const makePageHref = (pageNumber: number) => `/movies?page=${pageNumber}`;
 
   return (
-    <Layout title="Trending Movies" subtitle={`Page ${data.page}`}>
-      <div className="mx-auto max-w-6xl px-4 md:px-6 py-6 space-y-10">
-        {/* Movie Grid */}
-        <MediaGrid
-          items={data.results}
-          mediaType="movie"
-          title="Trending Movies"
-        />
+    <Layout
+      title="Movie Channels"
+      subtitle={`Page ${data.page} of ${data.total_pages} · ${data.total_results.toLocaleString()} total titles`}
+    >
+      <div className="mx-auto mt-4 max-w-7xl space-y-5 px-3 md:mt-5 md:px-4">
+        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+          <MediaGrid
+            items={data.results}
+            mediaType="movie"
+            title="Now Trending"
+          />
+        </section>
 
-        {/* Pagination */}
         {data.total_pages > 1 && (
-          <div className="pt-4">
-            <Separator className="mb-4" />
-
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              {/* Previous */}
+          <section className="cinema-panel flex flex-col gap-3 rounded-2xl p-4 md:flex-row md:items-center md:justify-between md:px-6">
+            <Button
+              variant="outline"
+              size="sm"
+              asChild={page > 1}
+              disabled={page <= 1}
+              className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
+            >
               {page > 1 ? (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={makePageHref(page - 1)}>← Previous</Link>
-                </Button>
+                <Link href={makePageHref(page - 1)}>Previous</Link>
               ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled
-                  className="opacity-50"
-                >
-                  ← Previous
-                </Button>
+                <span>Previous</span>
               )}
+            </Button>
 
-              {/* Page Info */}
-              <span>
-                Page {data.page} of {data.total_pages}
-              </span>
+            <Badge
+              variant="outline"
+              className="justify-center rounded-full border-border/60 bg-card/60 px-4 py-1 text-[10px] uppercase tracking-[0.15em]"
+            >
+              Page {data.page} / {data.total_pages}
+            </Badge>
 
-              {/* Next */}
+            <Button
+              variant="outline"
+              size="sm"
+              asChild={page < data.total_pages}
+              disabled={page >= data.total_pages}
+              className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
+            >
               {page < data.total_pages ? (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={makePageHref(page + 1)}>Next →</Link>
-                </Button>
+                <Link href={makePageHref(page + 1)}>Next</Link>
               ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled
-                  className="opacity-50"
-                >
-                  Next →
-                </Button>
+                <span>Next</span>
               )}
-            </div>
-          </div>
+            </Button>
+          </section>
         )}
       </div>
     </Layout>

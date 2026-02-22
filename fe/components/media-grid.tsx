@@ -1,5 +1,5 @@
-// fe/components/media-grid.tsx
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,12 +35,12 @@ export default function MediaGrid({
 }: MediaGridProps) {
   if (isLoading) {
     return (
-      <section className={cn("w-full space-y-6", className)}>
-        {title && <Skeleton className="h-8 w-48" />}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
+      <section className={cn("w-full space-y-5", className)}>
+        {title && <Skeleton className="h-8 w-52" />}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="space-y-2">
-              <Skeleton className="aspect-[2/3] w-full rounded-lg" />
+              <Skeleton className="aspect-[2/3] w-full rounded-xl" />
               <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-3 w-1/2" />
             </div>
@@ -51,75 +51,92 @@ export default function MediaGrid({
   }
 
   return (
-    <section className={cn("w-full space-y-6", className)}>
+    <section className={cn("w-full space-y-5", className)}>
       {title && (
-        <header className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            {mediaType === "movie" ? (
-              <Film className="h-6 w-6 text-primary" />
-            ) : (
-              <Tv className="h-6 w-6 text-primary" />
-            )}
-            <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+        <header className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary/14 text-primary">
+              {mediaType === "movie" ? (
+                <Film className="h-4 w-4" />
+              ) : (
+                <Tv className="h-4 w-4" />
+              )}
+            </span>
+            <h2 className="font-display text-3xl leading-none md:text-4xl">{title}</h2>
           </div>
-          <Badge variant="secondary" className="hidden sm:flex">
-            {items.length} {items.length === 1 ? "item" : "items"}
+          <Badge
+            variant="outline"
+            className="hidden rounded-full border-border/60 bg-card/65 px-3 py-1 text-[10px] uppercase tracking-[0.14em] sm:inline-flex"
+          >
+            {items.length} title{items.length === 1 ? "" : "s"}
           </Badge>
         </header>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {items.map((item) => {
           const imgSrc = item.poster_path
             ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
-            : "/no-poster.png";
+            : "/logo.svg";
+
           const displayTitle = item.title || item.name || "Untitled";
           const year =
             item.release_date?.slice(0, 4) ||
             item.first_air_date?.slice(0, 4) ||
-            "";
-          const rating = item.vote_average ? item.vote_average : null;
+            "TBA";
+          const rating = typeof item.vote_average === "number" ? item.vote_average : null;
 
           return (
             <Link
               key={item.id}
               href={`/${mediaType}/${item.id}`}
-              className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
+              className="group block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <Card className="pt-0 h-full overflow-hidden border-border/60 bg-card/90 backdrop-blur-sm transition-all duration-200 group-hover:border-primary/60 group-hover:shadow-lg group-hover:shadow-primary/5 flex flex-col">
-                <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted flex-shrink-0">
+              <Card className="h-full overflow-hidden rounded-xl border-border/60 bg-card/65 p-0 transition-all duration-300 group-hover:-translate-y-1 group-hover:border-primary/60 group-hover:shadow-[0_25px_38px_-28px_rgba(0,0,0,0.9)]">
+                <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
                   <Image
                     src={imgSrc}
                     alt={displayTitle}
                     fill
-                    sizes="(min-width: 1024px) 16vw, (min-width: 768px) 20vw, 50vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(min-width: 1024px) 15vw, (min-width: 768px) 24vw, 50vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                     placeholder="blur"
-                    blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzAwIiBoZWlnaHQ9IjQ3NSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiLz4="
+                    blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzAwIiBoZWlnaHQ9IjQ3NSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIi8+"
                   />
-                  {rating && (
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent opacity-90" />
+
+                  <div className="absolute right-2 top-2 flex gap-1">
+                    {rating && (
+                      <Badge className="rounded-full bg-black/65 px-2 py-0.5 text-[10px] text-white">
+                        <Star className="h-3 w-3 fill-current" />
+                        {rating.toFixed(1)}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="absolute bottom-2 left-2 right-2 flex items-end justify-between gap-2">
                     <Badge
-                      variant={rating >= 7 ? "default" : "secondary"}
-                      className="absolute top-2 right-2 text-xs font-semibold shadow-md"
+                      variant="outline"
+                      className="rounded-full border-white/28 bg-black/55 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white"
                     >
-                      <Star className="h-3 w-3" />
-                      {rating.toFixed(1)}
+                      {mediaType === "movie" ? "Movie" : "Series"}
                     </Badge>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                    <span className="inline-flex items-center gap-1 text-[10px] text-white/85">
+                      <Calendar className="h-3 w-3" />
+                      {year}
+                    </span>
+                  </div>
                 </div>
 
-                <CardContent className="px-2.5 space-y-1">
-                  <h3 className="text-sm font-medium leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                <CardContent className="space-y-1.5 px-3 pb-3 pt-2">
+                  <h3 className="line-clamp-2 text-sm font-semibold leading-tight tracking-wide group-hover:text-primary transition-colors">
                     {displayTitle}
                   </h3>
-                  {year && (
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <Calendar className="h-3 w-3" />
-                      <span>{year}</span>
-                    </div>
-                  )}
+                  <p className="text-[11px] uppercase tracking-[0.13em] text-muted-foreground">
+                    Explore details
+                  </p>
                 </CardContent>
               </Card>
             </Link>
@@ -128,17 +145,17 @@ export default function MediaGrid({
       </div>
 
       {items.length === 0 && (
-        <Card className="p-12 text-center">
+        <Card className="rounded-2xl border-border/60 bg-card/65 p-10 text-center">
           <div className="flex flex-col items-center gap-3">
             {mediaType === "movie" ? (
-              <Film className="h-12 w-12 text-muted-foreground/50" />
+              <Film className="h-10 w-10 text-muted-foreground/70" />
             ) : (
-              <Tv className="h-12 w-12 text-muted-foreground/50" />
+              <Tv className="h-10 w-10 text-muted-foreground/70" />
             )}
             <div className="space-y-1">
-              <h3 className="text-lg font-medium">No items found</h3>
+              <h3 className="font-display text-3xl leading-none">No titles found</h3>
               <p className="text-sm text-muted-foreground">
-                Try adjusting your filters or search criteria
+                Try another query, genre, or language.
               </p>
             </div>
           </div>

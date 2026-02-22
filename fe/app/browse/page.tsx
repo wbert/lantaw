@@ -1,11 +1,10 @@
-// app/browse/page.tsx
 // @ts-nocheck
 import Link from "next/link";
 import { api } from "@/lib/api";
 import MediaGrid from "@/components/media-grid";
 import { Layout } from "@/components/layouts/layout";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 
 type BrowseSearchParams = {
   mediaType?: "movie" | "tv";
@@ -47,7 +46,6 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
 
   const genreName = genre ? (GENRE_MAP[genre] ?? `Unknown (${genre})`) : null;
 
-  // Build filters for backend
   const query: Record<string, string> = {
     type: mediaType,
     sort_by: "popularity.desc",
@@ -65,7 +63,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   });
 
   const items = data.results ?? [];
-  const label = mediaType === "movie" ? "Movies" : "TV Shows";
+  const label = mediaType === "movie" ? "Movies" : "Series";
 
   const makePageHref = (targetPage: number) => {
     const sp = new URLSearchParams();
@@ -77,64 +75,82 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   };
 
   return (
-    <Layout>
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
-        {/* Header / filters summary */}
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold">Browse {label}</h1>
-
-          <p className="text-sm text-muted-foreground">
-            {genreName && <span className="mr-2">Genre: {genreName}</span>}
-            {language && <span>Language: {language.toUpperCase()}</span>}
-            {!genreName && !language && "Showing popular titles."}
-          </p>
-        </div>
-
-        {/* Grid */}
-        <MediaGrid items={items} mediaType={mediaType} />
-
-        {/* Pagination */}
-        {data.total_pages > 1 && (
-          <div className="pt-4">
-            <Separator className="mb-4" />
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              {/* Previous */}
-              {page > 1 ? (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={makePageHref(page - 1)}>← Previous</Link>
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled
-                  className="opacity-50"
-                >
-                  ← Previous
-                </Button>
-              )}
-
-              <span>
-                Page {data.page} of {data.total_pages}
-              </span>
-
-              {/* Next */}
-              {page < data.total_pages ? (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={makePageHref(page + 1)}>Next →</Link>
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled
-                  className="opacity-50"
-                >
-                  Next →
-                </Button>
-              )}
-            </div>
+    <Layout
+      title="Smart Browse"
+      subtitle={`Page ${data.page} of ${data.total_pages} · ${data.total_results.toLocaleString()} matches`}
+    >
+      <div className="mx-auto mt-4 max-w-7xl space-y-5 px-3 md:mt-5 md:px-4">
+        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <Badge className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+              {label}
+            </Badge>
+            {genreName && (
+              <Badge
+                variant="outline"
+                className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
+              >
+                Genre: {genreName}
+              </Badge>
+            )}
+            {language && (
+              <Badge
+                variant="outline"
+                className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
+              >
+                Language: {language.toUpperCase()}
+              </Badge>
+            )}
+            {!genreName && !language && (
+              <Badge
+                variant="outline"
+                className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
+              >
+                Popular right now
+              </Badge>
+            )}
           </div>
+
+          <MediaGrid items={items} mediaType={mediaType} title={`${label} Collection`} />
+        </section>
+
+        {data.total_pages > 1 && (
+          <section className="cinema-panel flex flex-col gap-3 rounded-2xl p-4 md:flex-row md:items-center md:justify-between md:px-6">
+            <Button
+              variant="outline"
+              size="sm"
+              asChild={page > 1}
+              disabled={page <= 1}
+              className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
+            >
+              {page > 1 ? (
+                <Link href={makePageHref(page - 1)}>Previous</Link>
+              ) : (
+                <span>Previous</span>
+              )}
+            </Button>
+
+            <Badge
+              variant="outline"
+              className="justify-center rounded-full border-border/60 bg-card/60 px-4 py-1 text-[10px] uppercase tracking-[0.15em]"
+            >
+              Page {data.page} / {data.total_pages}
+            </Badge>
+
+            <Button
+              variant="outline"
+              size="sm"
+              asChild={page < data.total_pages}
+              disabled={page >= data.total_pages}
+              className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
+            >
+              {page < data.total_pages ? (
+                <Link href={makePageHref(page + 1)}>Next</Link>
+              ) : (
+                <span>Next</span>
+              )}
+            </Button>
+          </section>
         )}
       </div>
     </Layout>

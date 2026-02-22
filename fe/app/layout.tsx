@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Bebas_Neue, Manrope } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas",
+  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });
 
@@ -16,10 +22,10 @@ export const metadata: Metadata = {
   generator: "Next.js",
   manifest: "/manifest.json",
   keywords: ["nextjs", "pwa", "next-pwa"],
-  authors: [{ name: "Your Name" }],
+  authors: [{ name: "Lantaw" }],
   icons: [
-    { rel: "apple-touch-icon", url: "/icons/icon-128x128.png" },
-    { rel: "icon", url: "/icons/icon-128x128.png" },
+    { rel: "apple-touch-icon", url: "/icons/icon-192x192.png" },
+    { rel: "icon", url: "/icons/icon-192x192.png" },
   ],
 };
 
@@ -33,13 +39,13 @@ export default function RootLayout({
       <head>
         <meta name="application-name" content="Lantaw" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <meta name="apple-mobile-web-app-title" content="Lantaw" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#06070a" />
       </head>
-      <body className={`${poppins.variable} antialiased`}>
+      <body className={`${manrope.variable} ${bebasNeue.variable} antialiased`}>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

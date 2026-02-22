@@ -3,7 +3,6 @@ import { api } from "@/lib/api";
 import MediaGrid from "@/components/media-grid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Layout } from "@/components/layouts/layout";
 
 type MovieApiResponse = {
@@ -19,11 +18,10 @@ type PageProps = {
 
 export const revalidate = 60;
 
-// simple config per mirror
 const movieMirrorBase: Record<string, (id: string) => string> = {
   "mirror-1": (id) => `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=false`,
   "mirror-2": (id) => `https://vidlink.pro/movie/${id}`,
-  "mirror-3": (id) => `https://vidsrc.to/embed/movie/${id}`, // placeholder
+  "mirror-3": (id) => `https://vidsrc.to/embed/movie/${id}`,
 };
 
 const mirrorLabels: Record<string, string> = {
@@ -32,13 +30,14 @@ const mirrorLabels: Record<string, string> = {
   "mirror-3": "Mirror 3",
 };
 
+const mirrorKeys = ["mirror-1", "mirror-2", "mirror-3"];
+
 export default async function MovieMirrorPage({ params }: PageProps) {
   const { id, mirror } = await params;
 
   const data = await api<MovieApiResponse>(`/v1/media/movie/${id}`);
   const { details, recommendations } = data;
 
-  // pick base for this mirror – fallback to mirror-1
   const buildUrl = movieMirrorBase[mirror] ?? movieMirrorBase["mirror-1"];
   const embedUrl = buildUrl(id);
   const mirrorLabel = mirrorLabels[mirror] ?? "Mirror 1";
@@ -48,114 +47,90 @@ export default async function MovieMirrorPage({ params }: PageProps) {
     typeof details?.vote_average === "number"
       ? details.vote_average.toFixed(1)
       : null;
-  const votes =
-    typeof details?.vote_count === "number"
-      ? details.vote_count.toLocaleString()
-      : null;
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-background text-foreground">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-6">
-          {/* HEADER ROW */}
-          <div className="flex items-center justify-between gap-3">
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                {mirrorLabel} · Movie
-              </p>
-              <h1 className="text-2xl md:text-3xl font-semibold">
-                {details?.title}
-                {year && (
-                  <span className="text-muted-foreground text-lg md:text-xl ml-1.5">
-                    ({year})
-                  </span>
-                )}
-              </h1>
-
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                {rating && (
-                  <Badge
-                    variant="outline"
-                    className="flex items-center gap-1 rounded-full px-2 py-0.5"
-                  >
-                    <span>⭐</span>
-                    <span className="font-semibold text-foreground">
-                      {rating}
-                    </span>
-                    {votes && (
-                      <span className="text-[10px]">({votes} votes)</span>
-                    )}
-                  </Badge>
-                )}
-
-                {details?.runtime && (
-                  <Badge variant="outline" className="rounded-full px-2 py-0.5">
-                    {details.runtime} min
-                  </Badge>
-                )}
-              </div>
-            </div>
-
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/movie/${id}`}>← Back</Link>
-            </Button>
+    <Layout
+      title="Playback Room"
+      subtitle={`${details?.title ?? "Movie"} · ${mirrorLabel}`}
+      backHref={`/movie/${id}`}
+    >
+      <div className="mx-auto mt-4 max-w-7xl space-y-5 px-3 md:mt-5 md:px-4">
+        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <Badge className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+              {mirrorLabel}
+            </Badge>
+            {year && (
+              <Badge
+                variant="outline"
+                className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
+              >
+                {year}
+              </Badge>
+            )}
+            {rating && (
+              <Badge
+                variant="outline"
+                className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
+              >
+                ⭐ {rating}
+              </Badge>
+            )}
           </div>
 
-          <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-            {/* Player */}
-            <div className="aspect-video w-full rounded-xl overflow-hidden bg-black border border-border/60">
-              <iframe
-                src={embedUrl}
-                title={details?.title}
-                className="w-full h-full"
-                referrerPolicy="origin"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
+          <div className="mb-4 flex flex-wrap gap-2">
+            {mirrorKeys.map((mirrorKey) => (
+              <Button
+                key={mirrorKey}
+                asChild
+                size="sm"
+                variant={mirrorKey === mirror ? "default" : "outline"}
+                className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
+              >
+                <Link href={`/movie/${id}/play/${mirrorKey}`}>{mirrorLabels[mirrorKey]}</Link>
+              </Button>
+            ))}
+          </div>
 
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Now Playing
-              </p>
-              {details?.overview && (
-                <p className="text-sm leading-relaxed line-clamp-[10]">
-                  {details.overview}
-                </p>
-              )}
-              {details?.genres && details.genres.length > 0 && (
-                <p className="text-xs">
+          <div className="aspect-video w-full overflow-hidden rounded-xl border border-border/60 bg-black">
+            <iframe
+              src={embedUrl}
+              title={details?.title}
+              className="h-full w-full"
+              referrerPolicy="origin"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+
+          <div className="mt-4 grid gap-3 text-sm text-muted-foreground md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+            <p className="leading-relaxed">{details?.overview}</p>
+            <div className="space-y-2 rounded-xl border border-border/60 bg-card/55 p-3 text-xs">
+              {details?.genres?.length > 0 && (
+                <p>
                   <span className="font-semibold text-foreground">Genres:</span>{" "}
                   {details.genres.map((g: any) => g.name).join(" · ")}
                 </p>
               )}
-              {details?.production_countries &&
-                details.production_countries.length > 0 && (
-                  <p className="text-xs">
-                    <span className="font-semibold text-foreground">
-                      Countries:
-                    </span>{" "}
-                    {details.production_countries
-                      .map((c: any) => c.name)
-                      .join(", ")}
-                  </p>
-                )}
+              {details?.production_countries?.length > 0 && (
+                <p>
+                  <span className="font-semibold text-foreground">Countries:</span>{" "}
+                  {details.production_countries.map((c: any) => c.name).join(", ")}
+                </p>
+              )}
             </div>
           </div>
+        </section>
 
-          <Separator />
-
-          {/* RECOMMENDATIONS */}
-          {recommendations?.results?.length > 0 && (
-            <section className="pb-8">
-              <MediaGrid
-                items={recommendations.results}
-                mediaType="movie"
-                title="You might also like"
-              />
-            </section>
-          )}
-        </div>
+        {recommendations?.results?.length > 0 && (
+          <section className="cinema-panel rounded-2xl p-4 md:p-6">
+            <MediaGrid
+              items={recommendations.results}
+              mediaType="movie"
+              title="Watch Next"
+            />
+          </section>
+        )}
       </div>
     </Layout>
   );

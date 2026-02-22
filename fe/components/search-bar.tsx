@@ -10,7 +10,6 @@ type SearchBarProps = {
   className?: string;
 };
 
-// Internal component that uses useSearchParams
 function SearchBarContent({
   placeholder = "Search movies, TV shows...",
   className,
@@ -19,7 +18,6 @@ function SearchBarContent({
   const searchParams = useSearchParams();
   const [value, setValue] = useState("");
 
-  // Prefill from ?q= on pages like /search
   useEffect(() => {
     const q = searchParams?.get("q") ?? "";
     setValue(q);
@@ -35,35 +33,35 @@ function SearchBarContent({
   return (
     <form
       onSubmit={onSubmit}
-      className={cn("relative flex items-center w-full", className)}
+      className={cn(
+        "group relative flex w-full items-center rounded-full border border-border/65 bg-card/75 p-1 shadow-[0_18px_35px_-28px_rgba(0,0,0,0.8)] backdrop-blur",
+        className,
+      )}
     >
+      <SearchIcon className="ml-3 h-4 w-4 shrink-0 text-muted-foreground" />
       <Input
         type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-full pr-24 text-sm"
+        className="h-9 border-0 bg-transparent px-2 text-sm shadow-none focus-visible:ring-0"
       />
       <Button
         type="submit"
         size="sm"
-        className="absolute right-0.5 top-1/2 -translate-y-1/2 rounded-full px-4"
+        className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
       >
-        <SearchIcon className="h-4 w-4" />
-        <span className="hidden sm:inline">Search</span>
+        Search
       </Button>
     </form>
   );
 }
 
-// Main export with Suspense boundary
 export function SearchBar(props: SearchBarProps) {
   return (
     <Suspense
       fallback={
-        <form
-          className={cn("relative flex items-center w-full", props.className)}
-        >
+        <form className={cn("relative flex items-center w-full", props.className)}>
           <Input
             type="search"
             placeholder={props.placeholder}

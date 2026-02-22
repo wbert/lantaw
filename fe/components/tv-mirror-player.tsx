@@ -6,9 +6,6 @@ import Link from "next/link";
 import MediaGrid from "./media-grid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-
-// ⬇️ NEW: import shadcn Select
 import {
   Select,
   SelectContent,
@@ -99,12 +96,8 @@ export default function TVMirrorPlayer({
   recommendations,
   initialMirror,
 }: TVMirrorPlayerProps) {
-  // filter seasons (exclude specials season 0)
   const playableSeasons = useMemo(
-    () =>
-      details.seasons.filter(
-        (s) => s.episode_count > 0 && s.season_number >= 1,
-      ),
+    () => details.seasons.filter((s) => s.episode_count > 0 && s.season_number >= 1),
     [details.seasons],
   );
 
@@ -119,16 +112,14 @@ export default function TVMirrorPlayer({
 
   const episodeCount = currentSeason?.episode_count ?? 1;
 
-  // mirror state (use initialMirror if valid, else first mirror)
   const [activeMirrorId, setActiveMirrorId] = useState<string>(
     MIRRORS.some((m) => m.id === (initialMirror ?? ""))
       ? (initialMirror as string)
       : MIRRORS[0].id,
   );
-  const activeMirror =
-    MIRRORS.find((m) => m.id === activeMirrorId) ?? MIRRORS[0];
 
-  // reset episode when season changes and old ep is out of range
+  const activeMirror = MIRRORS.find((m) => m.id === activeMirrorId) ?? MIRRORS[0];
+
   useEffect(() => {
     if (episode > episodeCount) {
       setEpisode(1);
@@ -140,9 +131,7 @@ export default function TVMirrorPlayer({
   const firstAirYear = details.first_air_date?.slice(0, 4) ?? "";
   const lastAirYear = details.last_air_date?.slice(0, 4) ?? "";
   const airLabel =
-    firstAirYear && lastAirYear
-      ? `${firstAirYear} - ${lastAirYear}`
-      : firstAirYear;
+    firstAirYear && lastAirYear ? `${firstAirYear} - ${lastAirYear}` : firstAirYear;
 
   const genres = details.genres.map((g) => g.name).join(" · ");
 
@@ -153,185 +142,148 @@ export default function TVMirrorPlayer({
     ) ?? null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-8">
-        {/* HEADER */}
-        <div className="flex items-center justify-between gap-3">
+    <div className="mx-auto mt-4 max-w-7xl space-y-5 px-3 md:mt-5 md:px-4">
+      <section className="cinema-panel rounded-2xl p-4 md:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-1">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              {activeMirror.label} · TV
-            </p>
-            <h1 className="text-2xl md:text-3xl font-semibold">
-              {details.name}
+            <h1 className="font-display text-4xl leading-none md:text-5xl">{details.name}</h1>
+            <div className="flex flex-wrap gap-2">
               {airLabel && (
-                <span className="flex text-muted-foreground text-lg md:text-xl">
-                  ({airLabel})
-                </span>
+                <Badge
+                  variant="outline"
+                  className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
+                >
+                  {airLabel}
+                </Badge>
               )}
-            </h1>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <Badge
                 variant="outline"
-                className="flex items-center gap-1 rounded-full px-2 py-0.5"
+                className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
               >
-                <span>⭐</span>
-                <span className="font-semibold text-foreground">
-                  {details.vote_average.toFixed(1)}
-                </span>
-                <span className="text-[10px]">
-                  ({details.vote_count.toLocaleString()} votes)
-                </span>
-              </Badge>
-
-              <Badge variant="outline" className="rounded-full px-2 py-0.5">
-                {details.number_of_seasons} season
-                {details.number_of_seasons > 1 ? "s" : ""},{" "}
-                {details.number_of_episodes} episodes total
+                ⭐ {details.vote_average.toFixed(1)}
               </Badge>
             </div>
           </div>
 
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`/tv/${tvId}`}>← Back</Link>
+          <Button variant="outline" size="sm" asChild className="rounded-full px-4 text-xs uppercase tracking-[0.14em]">
+            <Link href={`/tv/${tvId}`}>Back to Details</Link>
           </Button>
         </div>
 
-        {/* MIRROR SWITCHER */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs uppercase tracking-wide text-muted-foreground">
-            Mirrors:
-          </span>
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           {MIRRORS.map((mirror) => (
             <Button
               key={mirror.id}
               type="button"
               size="sm"
               variant={mirror.id === activeMirrorId ? "default" : "outline"}
-              className="rounded-full px-3 py-1 text-xs md:text-sm"
+              className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
               onClick={() => setActiveMirrorId(mirror.id)}
             >
               {mirror.label}
             </Button>
           ))}
-          {activeMirror.note && (
-            <span className="text-[10px] text-muted-foreground ml-1">
-              Source: {activeMirror.note}
-            </span>
-          )}
+          <span className="text-[11px] text-muted-foreground">Source: {activeMirror.note}</span>
         </div>
 
-        {/* PLAYER */}
-        <div className="aspect-video w-full rounded-xl overflow-hidden bg-black border border-border/60">
+        <div className="aspect-video w-full overflow-hidden rounded-xl border border-border/60 bg-black">
           <iframe
             src={embedSrc}
             title={`${details.name} - S${season}E${episode} (${activeMirror.label})`}
-            className="w-full h-full"
+            className="h-full w-full"
             referrerPolicy="origin"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
         </div>
 
-        {/* META / OVERVIEW */}
-        <section className="space-y-3">
-          <div className="flex flex-wrap items-center gap-3 text-sm md:text-base text-muted-foreground">
-            {genres && <span>{genres}</span>}
-          </div>
-
-          {details.overview && (
-            <p className="text-sm md:text-base text-muted-foreground max-w-3xl">
-              {details.overview}
-            </p>
-          )}
-
-          {trailer && (
-            <p className="text-xs text-muted-foreground">
-              Trailer available on YouTube:{" "}
-              <a
-                href={`https://www.youtube.com/watch?v=${trailer.key}`}
-                target="_blank"
-                rel="noreferrer"
-                className="underline"
-              >
-                watch trailer
-              </a>
-            </p>
-          )}
-        </section>
-
-        <Separator />
-
-        {/* SEASON + EPISODE PICKER */}
-        <section className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Select season & episode
-              </h2>
-              {currentSeason && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Season {currentSeason.season_number} ·{" "}
-                  {currentSeason.episode_count} episode
-                  {currentSeason.episode_count > 1 ? "s" : ""}
-                </p>
-              )}
-            </div>
-
-            {/* ⬇️ CHANGED: Season picker is now a Select */}
-            <div className="flex flex-wrap gap-2">
-              <Select
-                value={season.toString()}
-                onValueChange={(value) => setSeason(parseInt(value, 10))}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Select season" />
-                </SelectTrigger>
-                <SelectContent>
-                  {playableSeasons.map((s) => (
-                    <SelectItem
-                      key={s.season_number}
-                      value={s.season_number.toString()}
-                    >
-                      Season {s.season_number} ({s.episode_count} ep
-                      {s.episode_count > 1 ? "s" : ""})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {Array.from({ length: episodeCount }).map((_, idx) => {
-              const epNo = idx + 1;
-              const isActive = epNo === episode;
-              return (
-                <Button
-                  key={epNo}
-                  type="button"
-                  size="sm"
-                  variant={isActive ? "default" : "outline"}
-                  className="px-2.5 py-1 rounded-md text-xs"
-                  onClick={() => setEpisode(epNo)}
+        <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+          <div className="space-y-2">
+            {details.overview && (
+              <p className="text-sm text-muted-foreground md:text-base">{details.overview}</p>
+            )}
+            {trailer && (
+              <p className="text-xs text-muted-foreground">
+                Trailer: {" "}
+                <a
+                  href={`https://www.youtube.com/watch?v=${trailer.key}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline"
                 >
-                  Ep {epNo}
-                </Button>
-              );
-            })}
+                  YouTube
+                </a>
+              </p>
+            )}
           </div>
-        </section>
 
-        {/* RECOMMENDATIONS */}
-        {recommendations.results?.length > 0 && (
-          <section className="pb-8">
-            <MediaGrid
-              items={recommendations.results}
-              mediaType="tv"
-              title="You might also like"
-            />
-          </section>
-        )}
-      </div>
+          <div className="rounded-xl border border-border/60 bg-card/55 p-3 text-xs text-muted-foreground">
+            <p>{genres}</p>
+            <p className="mt-2">
+              {details.number_of_seasons} seasons · {details.number_of_episodes} episodes
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="cinema-panel rounded-2xl p-4 md:p-6">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-display text-3xl leading-none md:text-4xl">Season Picker</h2>
+            {currentSeason && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Season {currentSeason.season_number} · {currentSeason.episode_count} episodes
+              </p>
+            )}
+          </div>
+
+          <Select
+            value={season.toString()}
+            onValueChange={(value) => setSeason(parseInt(value, 10))}
+          >
+            <SelectTrigger className="w-full rounded-full border-border/60 bg-card/65 sm:w-[250px]">
+              <SelectValue placeholder="Select season" />
+            </SelectTrigger>
+            <SelectContent>
+              {playableSeasons.map((s) => (
+                <SelectItem key={s.season_number} value={s.season_number.toString()}>
+                  Season {s.season_number} ({s.episode_count} ep
+                  {s.episode_count > 1 ? "s" : ""})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: episodeCount }).map((_, idx) => {
+            const epNo = idx + 1;
+            const isActive = epNo === episode;
+            return (
+              <Button
+                key={epNo}
+                type="button"
+                size="sm"
+                variant={isActive ? "default" : "outline"}
+                className="rounded-full px-3 text-xs uppercase tracking-[0.12em]"
+                onClick={() => setEpisode(epNo)}
+              >
+                Ep {epNo}
+              </Button>
+            );
+          })}
+        </div>
+      </section>
+
+      {recommendations.results?.length > 0 && (
+        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+          <MediaGrid
+            items={recommendations.results}
+            mediaType="tv"
+            title="Watch Next"
+          />
+        </section>
+      )}
     </div>
   );
 }

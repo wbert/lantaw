@@ -4,7 +4,6 @@ import Link from "next/link";
 import MediaGrid from "./media-grid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 
 type TmdbGenre = {
   id: number;
@@ -64,14 +63,13 @@ export default function MovieDetails({
 
   const posterUrl = details.poster_path
     ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
-    : "/no-poster.png";
+    : "/logo.svg";
 
   const year = details.release_date?.slice(0, 4) ?? "";
-  const runtime =
-    details.runtime != null ? `${details.runtime} min` : "Runtime N/A";
+  const runtime = details.runtime != null ? `${details.runtime} min` : "Runtime N/A";
   const genres = details.genres.map((g) => g.name).join(" · ");
 
-  const topCast = credits.cast.slice(0, 8);
+  const topCast = credits.cast.slice(0, 10);
 
   const trailer =
     videos.results.find(
@@ -80,132 +78,77 @@ export default function MovieDetails({
     ) ?? null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* HERO */}
-      <section className="relative w-full h-[420px] md:h-[480px] overflow-hidden">
-        {backdropUrl && (
-          <Image
-            src={backdropUrl}
-            alt={details.title}
-            fill
-            priority
-            className="object-cover"
-          />
-        )}
+    <div className="mx-auto mt-4 max-w-7xl space-y-5 px-3 md:mt-5 md:px-4">
+      <section className="cinema-panel relative overflow-hidden rounded-3xl px-4 py-5 md:px-7 md:py-8">
+        <div className="absolute inset-0">
+          {backdropUrl ? (
+            <Image src={backdropUrl} alt={details.title} fill priority className="object-cover" />
+          ) : (
+            <div className="h-full w-full bg-muted" />
+          )}
+          <div className="hero-fade absolute inset-0" />
+        </div>
 
-        {/* overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/10" />
-
-        {/* content */}
-        <div className="relative h-full max-w-6xl mx-auto px-4 md:px-6 flex items-center gap-6 md:gap-10">
-          {/* poster */}
-          <div className="hidden md:block flex-shrink-0">
-            <div className="relative w-[220px] aspect-[2/3] rounded-2xl overflow-hidden shadow-xl border border-border/60 bg-muted">
-              <Image
-                src={posterUrl}
-                alt={details.title}
-                fill
-                className="object-cover"
-              />
+        <div className="relative z-10 grid gap-6 md:grid-cols-[220px_minmax(0,1fr)] md:items-end">
+          <div className="mx-auto w-[180px] md:mx-0 md:w-[220px]">
+            <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/15 bg-black/35 shadow-xl">
+              <Image src={posterUrl} alt={details.title} fill className="object-cover" />
             </div>
           </div>
 
-          {/* text */}
-          <div className="flex-1 space-y-4 md:space-y-5">
+          <div className="space-y-3 text-white">
             <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
-                {details.title}{" "}
-                {year && (
-                  <span className="text-muted-foreground text-2xl md:text-3xl">
-                    ({year})
-                  </span>
-                )}
+              <h1 className="font-display text-5xl leading-[0.9] md:text-7xl">
+                {details.title}
               </h1>
 
-              <div className="flex flex-wrap items-center gap-2 text-xs md:text-sm text-muted-foreground">
-                <Badge
-                  variant="outline"
-                  className="flex items-center gap-1 rounded-full px-2 py-0.5"
-                >
-                  <span>⭐</span>
-                  <span className="font-semibold text-foreground">
-                    {details.vote_average.toFixed(1)}
-                  </span>
-                  <span className="text-[10px]">
-                    ({details.vote_count.toLocaleString()} votes)
-                  </span>
-                </Badge>
-
-                {genres && (
-                  <Badge
-                    variant="secondary"
-                    className="rounded-full px-2 py-0.5"
-                  >
-                    {genres}
+              <div className="flex flex-wrap items-center gap-2">
+                {year && (
+                  <Badge className="rounded-full bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+                    {year}
                   </Badge>
                 )}
-
-                <Badge variant="outline" className="rounded-full px-2 py-0.5">
+                <Badge className="rounded-full bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+                  ⭐ {details.vote_average.toFixed(1)} · {details.vote_count.toLocaleString()} votes
+                </Badge>
+                <Badge className="rounded-full bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
                   {runtime}
                 </Badge>
               </div>
             </div>
 
             {details.overview && (
-              <p className="text-sm md:text-base text-muted-foreground max-w-2xl">
-                {details.overview}
-              </p>
+              <p className="max-w-3xl text-sm text-white/84 md:text-base">{details.overview}</p>
             )}
 
-            <div className="flex flex-wrap gap-3 text-xs md:text-sm text-muted-foreground">
+            <div className="space-y-2 text-xs text-white/80 md:text-sm">
+              {genres && <p>{genres}</p>}
               {details.production_countries?.length > 0 && (
-                <span>
-                  <span className="font-semibold text-foreground">
-                    Countries:
-                  </span>{" "}
-                  {details.production_countries.map((c) => c.name).join(", ")}
-                </span>
+                <p>
+                  Countries: {details.production_countries.map((c) => c.name).join(", ")}
+                </p>
               )}
             </div>
 
-            <Separator className="my-2 opacity-60" />
-
-            {/* Mirrors + Trailer */}
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                Mirrors:
-              </span>
-
-              <Button
-                asChild
-                size="sm"
-                className="rounded-full px-4 py-1.5 text-xs"
-              >
-                <Link href={`/movie/${details.id}/play/mirror-1`}>
-                  Mirror 1
-                </Link>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <Button asChild size="sm" className="rounded-full px-4 text-xs uppercase tracking-[0.14em]">
+                <Link href={`/movie/${details.id}/play/mirror-1`}>Mirror 1</Link>
               </Button>
-
               <Button
                 asChild
                 size="sm"
                 variant="outline"
-                className="rounded-full px-4 py-1.5 text-xs"
+                className="rounded-full border-white/35 bg-black/35 px-4 text-xs uppercase tracking-[0.14em] text-white hover:bg-black/50"
               >
-                <Link href={`/movie/${details.id}/play/mirror-2`}>
-                  Mirror 2
-                </Link>
+                <Link href={`/movie/${details.id}/play/mirror-2`}>Mirror 2</Link>
               </Button>
-
               <Button
                 asChild
                 size="sm"
                 variant="outline"
-                className="rounded-full px-4 py-1.5 text-xs"
+                className="rounded-full border-white/35 bg-black/35 px-4 text-xs uppercase tracking-[0.14em] text-white hover:bg-black/50"
               >
-                <Link href={`/movie/${details.id}/play/mirror-3`}>
-                  Mirror 3
-                </Link>
+                <Link href={`/movie/${details.id}/play/mirror-3`}>Mirror 3</Link>
               </Button>
 
               {trailer && (
@@ -213,14 +156,14 @@ export default function MovieDetails({
                   asChild
                   size="sm"
                   variant="secondary"
-                  className="rounded-full px-4 py-1.5 text-xs md:text-sm"
+                  className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
                 >
                   <a
                     href={`https://www.youtube.com/watch?v=${trailer.key}`}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    ▶ Watch Trailer
+                    Watch Trailer
                   </a>
                 </Button>
               )}
@@ -229,66 +172,40 @@ export default function MovieDetails({
         </div>
       </section>
 
-      {/* MOBILE POSTER */}
-      <section className="md:hidden max-w-6xl mx-auto px-4 md:px-6 mt-4">
-        <div className="flex justify-center">
-          <div className="relative w-[180px] aspect-[2/3] rounded-2xl overflow-hidden shadow-lg border border-border/60 bg-muted">
-            <Image
-              src={posterUrl}
-              alt={details.title}
-              fill
-              className="object-cover"
-            />
-          </div>
-        </div>
-      </section>
+      {topCast.length > 0 && (
+        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+          <h2 className="mb-4 font-display text-4xl leading-none">Top Cast</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {topCast.map((person) => {
+              const avatar = person.profile_path
+                ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
+                : "/logo.svg";
 
-      {/* CAST & DETAILS */}
-      <section className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-10 space-y-8">
-        {topCast.length > 0 && (
-          <div>
-            <h2 className="text-xl md:text-2xl font-semibold mb-4">Top Cast</h2>
-            <div className="flex gap-4 overflow-x-auto pb-2">
-              {topCast.map((person) => {
-                const avatar = person.profile_path
-                  ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
-                  : "/avatar-placeholder.png";
-                return (
-                  <div
-                    key={person.id}
-                    className="flex-shrink-0 w-28 text-center"
-                  >
-                    <div className="relative w-24 h-24 mx-auto rounded-full overflow-hidden mb-2 bg-muted border border-border/60">
-                      <Image
-                        src={avatar}
-                        alt={person.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <p className="text-xs font-medium truncate">
-                      {person.name}
-                    </p>
-                    {person.character && (
-                      <p className="text-[11px] text-muted-foreground truncate">
-                        as {person.character}
-                      </p>
-                    )}
+              return (
+                <div
+                  key={person.id}
+                  className="w-32 flex-shrink-0 rounded-xl border border-border/55 bg-card/55 p-2 text-center"
+                >
+                  <div className="relative mx-auto mb-2 h-20 w-20 overflow-hidden rounded-full border border-border/60">
+                    <Image src={avatar} alt={person.name} fill className="object-cover" />
                   </div>
-                );
-              })}
-            </div>
+                  <p className="truncate text-xs font-semibold">{person.name}</p>
+                  {person.character && (
+                    <p className="truncate text-[11px] text-muted-foreground">as {person.character}</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
-      {/* RECOMMENDATIONS */}
       {recommendations.results?.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 md:px-6 pb-12">
+        <section className="cinema-panel rounded-2xl p-4 md:p-6">
           <MediaGrid
             items={recommendations.results}
             mediaType="movie"
-            title="You might also like"
+            title="You Might Also Like"
           />
         </section>
       )}

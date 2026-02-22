@@ -1,10 +1,13 @@
 //@ts-nocheck
 "use client";
+
+import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { SearchBar } from "../search-bar";
 import { ThemeToggle } from "../theme-toggle";
 import { BrowseSheetTrigger } from "@/components/browse-sheet-trigger";
+import { Badge } from "@/components/ui/badge";
 
 type PageLayoutProps = {
   title?: string;
@@ -15,6 +18,11 @@ type PageLayoutProps = {
   children: ReactNode;
 };
 
+const NAV_LINKS = [
+  { href: "/movies", label: "Movies" },
+  { href: "/series", label: "Series" },
+];
+
 export function Layout({
   title,
   subtitle,
@@ -24,100 +32,115 @@ export function Layout({
   children,
 }: PageLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      {/* ---------------------- HEADER ---------------------- */}
-      <header className="w-full bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
-          {/* LEFT — LOGO */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-lg font-semibold hover:opacity-80 transition"
-          >
-            <Image
-              src="/logo.svg"
-              alt="Lantaw"
-              width={40}
-              height={40}
-              className="invert dark:invert-0"
-            />
-            <span className="hidden sm:inline">Lantaw</span>
-          </Link>
+    <div className="min-h-screen text-foreground">
+      <header className="sticky top-0 z-50 px-3 pt-3 md:px-4 md:pt-4">
+        <div className="mx-auto max-w-7xl">
+          <div className="cinema-panel rounded-2xl px-3 py-3 md:px-4">
+            <div className="flex items-center gap-3 md:gap-4">
+              <Link
+                href="/"
+                className="group flex items-center gap-2.5 rounded-lg px-1 py-1 transition hover:opacity-90"
+              >
+                <Image
+                  src="/logo.svg"
+                  alt="Lantaw"
+                  width={34}
+                  height={34}
+                  className="drop-shadow-[0_0_18px_rgba(255,66,45,0.45)]"
+                />
+                <div>
+                  <p className="font-display text-2xl leading-none">Lantaw</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                    Stream Index
+                  </p>
+                </div>
+              </Link>
 
-          {/* CENTER — SEARCH BAR (fills remaining space) */}
-          <div className="flex-1">
-            <SearchBar />
-          </div>
+              <nav className="hidden lg:flex items-center gap-1">
+                {NAV_LINKS.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-full px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-muted-foreground transition hover:bg-accent/70 hover:text-foreground"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
 
-          {/* RIGHT — NAV + THEME */}
-          <nav className="flex items-center gap-4 text-sm">
-            {/* Hide nav links on small screens, keep theme toggle */}
-            <Link
-              href="/movies"
-              className="hidden md:inline-block hover:text-primary transition-colors"
-            >
-              Movies
-            </Link>
-            <Link
-              href="/series"
-              className="hidden md:inline-block hover:text-primary transition-colors"
-            >
-              TV Shows
-            </Link>
+              <div className="ml-auto hidden xl:block w-[360px]">
+                <SearchBar placeholder="Find movies or series..." />
+              </div>
 
-            {/* BROWSE SHEET (genre/language filters) */}
-            <div className="hidden md:inline-block">
-              <BrowseSheetTrigger />
+              <div className="ml-auto flex items-center gap-2 xl:ml-3">
+                <div className="hidden md:block">
+                  <BrowseSheetTrigger />
+                </div>
+                <ThemeToggle />
+              </div>
             </div>
 
-            {/* On mobile you can later turn this into a full-screen sheet if you want */}
-            <ThemeToggle />
-          </nav>
+            <div className="mt-3 xl:hidden">
+              <SearchBar placeholder="Find movies or series..." />
+            </div>
+
+            <div className="mt-3 flex md:hidden items-center gap-2 overflow-x-auto pb-1">
+              {NAV_LINKS.map((item) => (
+                <Link key={item.href} href={item.href}>
+                  <Badge
+                    variant="outline"
+                    className="whitespace-nowrap rounded-full border-border/60 bg-card/70 px-3 py-1 text-[10px] uppercase tracking-[0.15em]"
+                  >
+                    {item.label}
+                  </Badge>
+                </Link>
+              ))}
+              <BrowseSheetTrigger />
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* ---------------------- PAGE TITLE ROW ---------------------- */}
       {(title || backHref || actions || subtitle) && (
-        <section className="max-w-7xl mx-auto w-full px-4 pt-6 pb-4 border-b space-y-3">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <div className="space-y-1">
-              {backHref && (
-                <Link
-                  href={backHref}
-                  className="text-xs text-muted-foreground hover:text-primary transition"
-                >
-                  ← {backLabel}
-                </Link>
-              )}
+        <section className="mx-auto mt-4 w-full max-w-7xl px-3 md:mt-5 md:px-4">
+          <div className="cinema-panel rounded-2xl px-4 py-4 md:px-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-1">
+                {backHref && (
+                  <Link
+                    href={backHref}
+                    className="inline-flex text-[11px] uppercase tracking-[0.16em] text-muted-foreground transition hover:text-foreground"
+                  >
+                    ← {backLabel}
+                  </Link>
+                )}
 
-              {title && (
-                <h1 className="text-xl md:text-2xl font-semibold leading-tight">
-                  {title}
-                </h1>
-              )}
+                {title && (
+                  <h1 className="font-display text-3xl leading-none md:text-4xl">
+                    {title}
+                  </h1>
+                )}
 
-              {subtitle && (
-                <p className="text-xs md:text-sm text-muted-foreground">
-                  {subtitle}
-                </p>
-              )}
+                {subtitle && (
+                  <p className="text-xs text-muted-foreground md:text-sm">
+                    {subtitle}
+                  </p>
+                )}
+              </div>
+
+              {actions && <div className="flex items-center gap-2">{actions}</div>}
             </div>
-
-            {actions && (
-              <div className="flex items-center gap-2">{actions}</div>
-            )}
           </div>
         </section>
       )}
 
-      {/* ---------------------- MAIN CONTENT ---------------------- */}
-      <main className="flex-1 w-full">{children}</main>
+      <main className="w-full pb-14">{children}</main>
 
-      {/* ---------------------- FOOTER ---------------------- */}
-      <footer className="border-t py-6 text-center text-muted-foreground text-xs">
-        <div className="max-w-7xl mx-auto">
-          <p>Built with ❤️ | Lantaw</p>
-          <p className="mt-1 opacity-70">
-            This site uses TMDB but is not endorsed or certified by TMDB.
+      <footer className="mt-auto border-t border-border/55 bg-black/25 px-4 py-6 text-center text-xs text-muted-foreground backdrop-blur">
+        <div className="mx-auto max-w-7xl">
+          <p className="uppercase tracking-[0.16em]">Lantaw Discovery Hub</p>
+          <p className="mt-1 opacity-80">
+            Powered by TMDB data. Not affiliated with TMDB.
           </p>
         </div>
       </footer>
