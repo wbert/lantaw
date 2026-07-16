@@ -11,7 +11,7 @@ function SkeletonGrid({ title }: { title: string }) {
       <h2 className="text-sm md:text-base font-semibold text-muted-foreground">
         {title}
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-4 sm:grid-cols-[repeat(3,minmax(0,1fr))] md:grid-cols-[repeat(5,minmax(0,1fr))] lg:grid-cols-[repeat(6,minmax(0,1fr))]">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="w-full aspect-[2/3] rounded-md" />
@@ -27,7 +27,7 @@ function SkeletonGrid({ title }: { title: string }) {
 export default function Loading() {
   return (
     <Layout title="Searching…" subtitle="Fetching results, please wait.">
-      <div className="mx-auto max-w-6xl px-4 md:px-6 py-6 space-y-6">
+      <div className="page-shell py-6 space-y-6">
         <div className="space-y-6">
           {/* Top message */}
           <div className="space-y-2">

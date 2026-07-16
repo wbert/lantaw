@@ -7,7 +7,6 @@ import { api } from "@/lib/api";
 import { Layout } from "@/components/layouts/layout";
 import MediaGrid from "@/components/media-grid";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 type TmdbItem = {
   id: number;
@@ -45,9 +44,40 @@ export default async function HomePage() {
 
   return (
     <Layout>
-      <div className="mx-auto mt-4 max-w-7xl space-y-7 px-3 md:mt-5 md:space-y-8 md:px-4">
-        <section className="cinema-panel relative overflow-hidden rounded-3xl px-4 py-5 md:px-8 md:py-8">
-          <div className="absolute inset-0">
+      <div className="page-shell mt-4 space-y-2 md:mt-6">
+        <section className="home-console">
+          <div className="home-console__copy">
+            <span className="soft-chip w-fit">Lantaw stream index</span>
+            <div className="space-y-3">
+              <h1 className="font-display text-[length:var(--text-display)] leading-[0.92]">
+                Find the next title before the couch goes cold.
+              </h1>
+              <p className="max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
+                Search movies and series, filter by genre or language, then open a mirror
+                from the detail page.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {hero?.id && (
+                <Button asChild className="rounded-full px-5 text-xs font-semibold uppercase tracking-[0.12em]">
+                  <Link href={`/${heroMediaType}/${hero.id}`}>Open spotlight</Link>
+                </Button>
+              )}
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full px-5 text-xs font-semibold uppercase tracking-[0.12em]"
+              >
+                <Link href="/browse?mediaType=movie">Browse filters</Link>
+              </Button>
+            </div>
+          </div>
+
+          <Link
+            href={hero?.id ? `/${heroMediaType}/${hero.id}` : "/movies"}
+            className="home-console__poster lift-link block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
             {hero?.backdrop_path ? (
               <Image
                 src={`https://image.tmdb.org/t/p/w1280${hero.backdrop_path}`}
@@ -59,72 +89,44 @@ export default async function HomePage() {
             ) : (
               <div className="h-full w-full bg-muted" />
             )}
-            <div className="hero-fade absolute inset-0" />
-          </div>
-
-          <div className="relative z-10 flex min-h-[260px] items-end md:min-h-[360px]">
-            <div className="max-w-2xl space-y-3">
-              <div className="flex flex-wrap gap-2">
-                <Badge className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
-                  Featured Pick
-                </Badge>
-                {heroYear && (
-                  <Badge
-                    variant="outline"
-                    className="rounded-full border-white/35 bg-black/40 px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-white"
-                  >
-                    {heroYear}
-                  </Badge>
+            <div className="relative z-10 flex h-full items-end p-4 md:p-6">
+              <div className="max-w-2xl space-y-3 text-[color:var(--color-hero-ink)]">
+                <div className="flex flex-wrap gap-2">
+                  <span className="media-chip">Spotlight</span>
+                  {heroYear && <span className="media-chip">{heroYear}</span>}
+                </div>
+                <h2 className="font-display text-5xl leading-[0.92] md:text-7xl">
+                  {heroTitle}
+                </h2>
+                {hero?.overview && (
+                  <p className="line-clamp-3 max-w-xl text-sm leading-6 md:text-base">
+                    {hero.overview}
+                  </p>
                 )}
-              </div>
-
-              <h1 className="font-display text-5xl leading-[0.9] text-white drop-shadow-md md:text-7xl">
-                {heroTitle}
-              </h1>
-
-              {hero?.overview && (
-                <p className="max-w-xl text-sm text-white/82 md:text-base">
-                  {hero.overview}
-                </p>
-              )}
-
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                {hero?.id && (
-                  <Button asChild className="rounded-full px-5 text-xs uppercase tracking-[0.14em]">
-                    <Link href={`/${heroMediaType}/${hero.id}`}>Watch Details</Link>
-                  </Button>
-                )}
-                <Button
-                  asChild
-                  variant="outline"
-                  className="rounded-full border-white/35 bg-black/30 px-5 text-xs uppercase tracking-[0.14em] text-white hover:bg-black/45"
-                >
-                  <Link href="/browse?mediaType=movie">Browse Library</Link>
-                </Button>
               </div>
             </div>
-          </div>
+          </Link>
         </section>
 
-        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+        <section className="content-rail">
           <MediaGrid
-            title="Trending Movies"
+            title="Trending movies"
             items={popularMovies.results.slice(0, 12)}
             mediaType="movie"
           />
         </section>
 
-        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+        <section className="content-rail">
           <MediaGrid
-            title="Binge-Worthy Series"
+            title="Series people keep opening"
             items={popularTV.results.slice(0, 12)}
             mediaType="tv"
           />
         </section>
 
-        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+        <section className="content-rail">
           <MediaGrid
-            title="Top Rated Spotlight"
+            title="High-rated movies"
             items={awardMovies.results.slice(0, 12)}
             mediaType="movie"
           />

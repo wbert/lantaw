@@ -12,7 +12,7 @@ function SkeletonGrid() {
         Browse Results
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-4 sm:grid-cols-[repeat(3,minmax(0,1fr))] md:grid-cols-[repeat(5,minmax(0,1fr))] lg:grid-cols-[repeat(6,minmax(0,1fr))]">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="w-full aspect-[2/3] rounded-md" />
@@ -28,7 +28,7 @@ function SkeletonGrid() {
 export default function Loading() {
   return (
     <Layout title="Browse" subtitle="Loading filtered titles…">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+      <div className="page-shell py-6 space-y-8">
         {/* Header / filters summary skeleton */}
         <div className="space-y-2">
           <Skeleton className="h-6 w-44" />

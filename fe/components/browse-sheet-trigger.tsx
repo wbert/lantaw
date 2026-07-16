@@ -63,18 +63,18 @@ export function BrowseSheetTrigger({ className }: BrowseSheetTriggerProps) {
         <Button
           variant="outline"
           size="sm"
-          className={`rounded-full border-border/60 bg-card/70 px-3 text-xs uppercase tracking-[0.14em] hover:bg-accent/70 ${className ?? ""}`}
+          className={`control-label rounded-full border-border bg-card px-3 text-xs font-semibold uppercase tracking-[0.12em] hover:bg-accent ${className ?? ""}`}
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
           Browse
         </Button>
       </SheetTrigger>
 
-      <SheetContent className="w-full border-l-border/55 bg-background/95 px-5 pt-6 sm:max-w-md">
+      <SheetContent className="w-full border-l-border bg-background px-5 pt-6 sm:max-w-md">
         <SheetHeader className="mb-6 space-y-1">
-          <SheetTitle className="font-display text-3xl leading-none">Smart Browse</SheetTitle>
+          <SheetTitle className="font-display text-3xl leading-none">Browse filters</SheetTitle>
           <SheetDescription className="text-sm text-muted-foreground">
-            Mix format, genre, and language filters to discover what to watch next.
+            Pick a format, genre, and original language.
           </SheetDescription>
         </SheetHeader>
 
@@ -88,8 +88,9 @@ export function BrowseSheetTrigger({ className }: BrowseSheetTriggerProps) {
                 <Button
                   key={item.value}
                   type="button"
+                  aria-pressed={mediaType === item.value}
                   variant={mediaType === item.value ? "default" : "outline"}
-                  className="h-8 rounded-full px-3 text-xs"
+                  className="control-label min-h-11 rounded-full px-3 text-xs font-semibold"
                   onClick={() => setMediaType(item.value as "movie" | "tv")}
                 >
                   {item.label}
@@ -108,8 +109,9 @@ export function BrowseSheetTrigger({ className }: BrowseSheetTriggerProps) {
                 <Button
                   key={g.id || "any-genre"}
                   type="button"
+                  aria-pressed={genre === g.id}
                   variant={genre === g.id ? "default" : "outline"}
-                  className="h-8 justify-start rounded-full px-3 text-xs"
+                  className="control-label min-h-11 justify-start rounded-full px-3 text-xs font-semibold"
                   onClick={() => setGenre(g.id)}
                 >
                   {g.label}
@@ -128,8 +130,9 @@ export function BrowseSheetTrigger({ className }: BrowseSheetTriggerProps) {
                 <Button
                   key={l.id || "any-lang"}
                   type="button"
+                  aria-pressed={language === l.id}
                   variant={language === l.id ? "default" : "outline"}
-                  className="h-8 justify-start rounded-full px-3 text-xs"
+                  className="control-label min-h-11 justify-start rounded-full px-3 text-xs font-semibold"
                   onClick={() => setLanguage(l.id)}
                 >
                   {l.label}
@@ -142,7 +145,7 @@ export function BrowseSheetTrigger({ className }: BrowseSheetTriggerProps) {
             <Button
               type="button"
               variant="ghost"
-              className="h-8 rounded-full px-4 text-xs"
+              className="control-label rounded-full px-4 text-xs font-semibold"
               onClick={() => {
                 setMediaType("movie");
                 setGenre("");
@@ -151,8 +154,8 @@ export function BrowseSheetTrigger({ className }: BrowseSheetTriggerProps) {
             >
               Reset
             </Button>
-            <Button type="submit" className="h-8 rounded-full px-4 text-xs">
-              Apply Filters
+            <Button type="submit" className="control-label rounded-full px-4 text-xs font-semibold">
+              Apply
             </Button>
           </div>
         </form>

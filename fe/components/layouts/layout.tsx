@@ -4,10 +4,11 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { SearchBar } from "../search-bar";
 import { ThemeToggle } from "../theme-toggle";
 import { BrowseSheetTrigger } from "@/components/browse-sheet-trigger";
-import { Badge } from "@/components/ui/badge";
+import { ChevronLeft } from "lucide-react";
 
 type PageLayoutProps = {
   title?: string;
@@ -31,48 +32,51 @@ export function Layout({
   actions,
   children,
 }: PageLayoutProps) {
+  const pathname = usePathname();
+
   return (
     <div className="min-h-screen text-foreground">
-      <header className="sticky top-0 z-50 px-3 pt-3 md:px-4 md:pt-4">
-        <div className="mx-auto max-w-7xl">
-          <div className="cinema-panel rounded-2xl px-3 py-3 md:px-4">
-            <div className="flex items-center gap-3 md:gap-4">
+      <header className="sticky top-0 z-[var(--z-sticky)] px-3 pt-3 md:px-4 md:pt-4">
+        <div className="page-shell">
+          <div className="surface-panel px-3 py-3 md:px-4">
+            <div className="flex items-center gap-3">
               <Link
                 href="/"
-                className="group flex items-center gap-2.5 rounded-lg px-1 py-1 transition hover:opacity-90"
+                className="group flex shrink-0 items-center gap-2.5 rounded-lg px-1 py-1 transition-opacity duration-200 ease-[var(--ease-out)] hover:opacity-90"
+                aria-label="Lantaw home"
               >
                 <Image
                   src="/logo.svg"
                   alt="Lantaw"
                   width={34}
                   height={34}
-                  className="drop-shadow-[0_0_18px_rgba(255,66,45,0.45)]"
                 />
                 <div>
-                  <p className="font-display text-2xl leading-none">Lantaw</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                  <p className="wordmark text-2xl leading-none">Lantaw</p>
+                  <p className="control-label text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                     Stream Index
                   </p>
                 </div>
               </Link>
 
-              <nav className="hidden lg:flex items-center gap-1">
+              <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
                 {NAV_LINKS.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="rounded-full px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-muted-foreground transition hover:bg-accent/70 hover:text-foreground"
+                    aria-current={pathname === item.href ? "page" : undefined}
+                    className="nav-link rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-[background-color,color] duration-200 ease-[var(--ease-out)] hover:bg-accent hover:text-foreground aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground"
                   >
                     {item.label}
                   </Link>
                 ))}
               </nav>
 
-              <div className="ml-auto hidden xl:block w-[360px]">
+              <div className="ml-auto hidden w-[min(36vw,28rem)] xl:block">
                 <SearchBar placeholder="Find movies or series..." />
               </div>
 
-              <div className="ml-auto flex items-center gap-2 xl:ml-3">
+              <div className="ml-auto flex shrink-0 items-center gap-2 xl:ml-1">
                 <div className="hidden md:block">
                   <BrowseSheetTrigger />
                 </div>
@@ -84,15 +88,15 @@ export function Layout({
               <SearchBar placeholder="Find movies or series..." />
             </div>
 
-            <div className="mt-3 flex md:hidden items-center gap-2 overflow-x-auto pb-1">
+            <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 md:hidden">
               {NAV_LINKS.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  <Badge
-                    variant="outline"
-                    className="whitespace-nowrap rounded-full border-border/60 bg-card/70 px-3 py-1 text-[10px] uppercase tracking-[0.15em]"
-                  >
-                    {item.label}
-                  </Badge>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={pathname === item.href ? "page" : undefined}
+                  className="nav-link inline-flex min-h-11 items-center rounded-full border border-border bg-card px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground"
+                >
+                  {item.label}
                 </Link>
               ))}
               <BrowseSheetTrigger />
@@ -102,16 +106,17 @@ export function Layout({
       </header>
 
       {(title || backHref || actions || subtitle) && (
-        <section className="mx-auto mt-4 w-full max-w-7xl px-3 md:mt-5 md:px-4">
-          <div className="cinema-panel rounded-2xl px-4 py-4 md:px-6">
+        <section className="page-shell mt-4 md:mt-5">
+          <div className="surface-panel px-4 py-4 md:px-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
                 {backHref && (
                   <Link
                     href={backHref}
-                    className="inline-flex text-[11px] uppercase tracking-[0.16em] text-muted-foreground transition hover:text-foreground"
+                    className="nav-link inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-colors duration-200 ease-[var(--ease-out)] hover:text-foreground"
                   >
-                    ← {backLabel}
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    {backLabel}
                   </Link>
                 )}
 
@@ -122,7 +127,7 @@ export function Layout({
                 )}
 
                 {subtitle && (
-                  <p className="text-xs text-muted-foreground md:text-sm">
+                  <p className="max-w-3xl text-sm text-muted-foreground">
                     {subtitle}
                   </p>
                 )}
@@ -136,12 +141,26 @@ export function Layout({
 
       <main className="w-full pb-14">{children}</main>
 
-      <footer className="mt-auto border-t border-border/55 bg-black/25 px-4 py-6 text-center text-xs text-muted-foreground backdrop-blur">
-        <div className="mx-auto max-w-7xl">
-          <p className="uppercase tracking-[0.16em]">Lantaw Discovery Hub</p>
-          <p className="mt-1 opacity-80">
-            Powered by TMDB data. Not affiliated with TMDB.
-          </p>
+      <footer className="statement-footer">
+        <div className="statement-footer__inner">
+          <p className="statement-footer__line">Find the title. Keep the night moving.</p>
+          <div className="statement-footer__meta">
+            <div>
+              <p className="wordmark text-2xl leading-none text-foreground">Lantaw</p>
+              <p>Powered by TMDB data. Not affiliated with TMDB.</p>
+            </div>
+            <nav className="flex flex-wrap gap-3" aria-label="Footer">
+              <Link className="footer-link hover:text-foreground" href="/movies">
+                Movies
+              </Link>
+              <Link className="footer-link hover:text-foreground" href="/series">
+                Series
+              </Link>
+              <Link className="footer-link hover:text-foreground" href="/browse?mediaType=movie">
+                Browse
+              </Link>
+            </nav>
+          </div>
         </div>
       </footer>
     </div>

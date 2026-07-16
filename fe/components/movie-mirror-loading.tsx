@@ -8,7 +8,7 @@ export default function MovieMirrorLoading() {
   return (
     <Layout>
       <div className="min-h-screen bg-background text-foreground">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-6">
+        <div className="page-shell py-6 space-y-6">
           {/* HEADER ROW */}
           <div className="flex items-center justify-between gap-3">
             <div className="space-y-2">
@@ -27,7 +27,7 @@ export default function MovieMirrorLoading() {
           {/* PLAYER + META */}
           <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             {/* Player */}
-            <div className="aspect-video w-full rounded-xl border border-border/60 overflow-hidden bg-black/70">
+            <div className="aspect-video w-full rounded-[var(--radius-panel)] border border-border overflow-hidden bg-[color:var(--color-paper)]">
               <Skeleton className="h-full w-full rounded-xl" />
             </div>
 
@@ -51,7 +51,7 @@ export default function MovieMirrorLoading() {
           <section className="pb-8">
             <Skeleton className="h-6 w-56 mb-4" />
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+            <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-4 sm:grid-cols-[repeat(4,minmax(0,1fr))] md:grid-cols-[repeat(6,minmax(0,1fr))]">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="space-y-2">
                   <Skeleton className="w-full h-[180px] rounded-md" />

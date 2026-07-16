@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import MediaGrid from "./media-grid";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 type TmdbGenre = {
   id: number;
@@ -78,50 +77,50 @@ export default function MovieDetails({
     ) ?? null;
 
   return (
-    <div className="mx-auto mt-4 max-w-7xl space-y-5 px-3 md:mt-5 md:px-4">
-      <section className="cinema-panel relative overflow-hidden rounded-3xl px-4 py-5 md:px-7 md:py-8">
+    <div className="page-shell mt-4 space-y-8 md:mt-5">
+      <section className="poster-hero px-4 py-5 md:px-7 md:py-8">
         <div className="absolute inset-0">
           {backdropUrl ? (
             <Image src={backdropUrl} alt={details.title} fill priority className="object-cover" />
           ) : (
             <div className="h-full w-full bg-muted" />
           )}
-          <div className="hero-fade absolute inset-0" />
+          <div className="poster-hero__fade" />
         </div>
 
         <div className="relative z-10 grid gap-6 md:grid-cols-[220px_minmax(0,1fr)] md:items-end">
           <div className="mx-auto w-[180px] md:mx-0 md:w-[220px]">
-            <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/15 bg-black/35 shadow-xl">
+            <div className="relative aspect-[2/3] overflow-hidden rounded-[var(--radius-card)] border border-[color:var(--color-rule)] bg-[color:var(--color-paper-2)]">
               <Image src={posterUrl} alt={details.title} fill className="object-cover" />
             </div>
           </div>
 
-          <div className="space-y-3 text-white">
+          <div className="space-y-3 text-[color:var(--color-hero-ink)]">
             <div className="space-y-2">
-              <h1 className="font-display text-5xl leading-[0.9] md:text-7xl">
+              <h1 className="font-display text-[length:var(--text-display-s)] leading-[0.92] md:text-[length:var(--text-display)]">
                 {details.title}
               </h1>
 
               <div className="flex flex-wrap items-center gap-2">
                 {year && (
-                  <Badge className="rounded-full bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+                  <span className="media-chip">
                     {year}
-                  </Badge>
+                  </span>
                 )}
-                <Badge className="rounded-full bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
-                  ⭐ {details.vote_average.toFixed(1)} · {details.vote_count.toLocaleString()} votes
-                </Badge>
-                <Badge className="rounded-full bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+                <span className="media-chip">
+                  {details.vote_average.toFixed(1)} / 10 · {details.vote_count.toLocaleString()} votes
+                </span>
+                <span className="media-chip">
                   {runtime}
-                </Badge>
+                </span>
               </div>
             </div>
 
             {details.overview && (
-              <p className="max-w-3xl text-sm text-white/84 md:text-base">{details.overview}</p>
+              <p className="max-w-3xl text-sm leading-6 md:text-base">{details.overview}</p>
             )}
 
-            <div className="space-y-2 text-xs text-white/80 md:text-sm">
+            <div className="space-y-2 text-xs md:text-sm">
               {genres && <p>{genres}</p>}
               {details.production_countries?.length > 0 && (
                 <p>
@@ -131,24 +130,24 @@ export default function MovieDetails({
             </div>
 
             <div className="flex flex-wrap items-center gap-2 pt-1">
-              <Button asChild size="sm" className="rounded-full px-4 text-xs uppercase tracking-[0.14em]">
-                <Link href={`/movie/${details.id}/play/mirror-1`}>Mirror 1</Link>
+              <Button asChild size="sm" className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]">
+                <Link href={`/movie/${details.id}/play/mirror-1`}>Play 1</Link>
               </Button>
               <Button
                 asChild
                 size="sm"
                 variant="outline"
-                className="rounded-full border-white/35 bg-black/35 px-4 text-xs uppercase tracking-[0.14em] text-white hover:bg-black/50"
+                className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]"
               >
-                <Link href={`/movie/${details.id}/play/mirror-2`}>Mirror 2</Link>
+                <Link href={`/movie/${details.id}/play/mirror-2`}>Play 2</Link>
               </Button>
               <Button
                 asChild
                 size="sm"
                 variant="outline"
-                className="rounded-full border-white/35 bg-black/35 px-4 text-xs uppercase tracking-[0.14em] text-white hover:bg-black/50"
+                className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]"
               >
-                <Link href={`/movie/${details.id}/play/mirror-3`}>Mirror 3</Link>
+                <Link href={`/movie/${details.id}/play/mirror-3`}>Play 3</Link>
               </Button>
 
               {trailer && (
@@ -156,14 +155,14 @@ export default function MovieDetails({
                   asChild
                   size="sm"
                   variant="secondary"
-                  className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
+                  className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]"
                 >
                   <a
                     href={`https://www.youtube.com/watch?v=${trailer.key}`}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Watch Trailer
+                    Trailer
                   </a>
                 </Button>
               )}
@@ -173,7 +172,7 @@ export default function MovieDetails({
       </section>
 
       {topCast.length > 0 && (
-        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+        <section className="content-rail">
           <h2 className="mb-4 font-display text-4xl leading-none">Top Cast</h2>
           <div className="flex gap-3 overflow-x-auto pb-2">
             {topCast.map((person) => {
@@ -184,7 +183,7 @@ export default function MovieDetails({
               return (
                 <div
                   key={person.id}
-                  className="w-32 flex-shrink-0 rounded-xl border border-border/55 bg-card/55 p-2 text-center"
+                  className="w-32 flex-shrink-0 rounded-[var(--radius-card)] border border-border bg-card p-2 text-center"
                 >
                   <div className="relative mx-auto mb-2 h-20 w-20 overflow-hidden rounded-full border border-border/60">
                     <Image src={avatar} alt={person.name} fill className="object-cover" />
@@ -201,7 +200,7 @@ export default function MovieDetails({
       )}
 
       {recommendations.results?.length > 0 && (
-        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+        <section className="content-rail">
           <MediaGrid
             items={recommendations.results}
             mediaType="movie"

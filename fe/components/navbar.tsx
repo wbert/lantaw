@@ -6,45 +6,38 @@ import { ThemeToggle } from "./theme-toggle";
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur">
-      <div className="w-full max-w-7xl mx-auto h-16 px-4 md:px-6">
-        {/* 3-column balanced grid */}
-        <div className="grid grid-cols-3 h-full items-center">
-          {/* LEFT: Logo */}
+    <header className="sticky top-0 z-[var(--z-sticky)] px-3 pt-3 md:px-4 md:pt-4">
+      <div className="page-shell">
+        <div className="surface-panel flex items-center gap-3 px-3 py-3 md:px-4">
+          <Link href="/" className="wordmark shrink-0 rounded-lg px-1 py-1 text-2xl leading-none">
+            Lantaw
+          </Link>
 
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
-                MVReels
-              </span>
-            </Link>
-          </div>
-
-          {/* CENTER: Fixed-width search bar (TRUE CENTER) */}
-          <div className="flex justify-center text-center">
-            <div className="w-full max-w-lg">
-              <SearchBar />
+          <div className="hidden min-w-0 flex-1 justify-center md:flex">
+            <div className="w-full max-w-xl">
+              <SearchBar placeholder="Find movies or series..." />
             </div>
           </div>
 
-          {/* RIGHT: Nav */}
-          <nav className="hidden md:flex items-center justify-end gap-4 text-sm">
+          <nav className="ml-auto hidden items-center justify-end gap-2 text-sm md:flex">
             <Link
               href="/movies"
-              className="text-muted-foreground hover:text-foreground"
+              className="nav-link rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground hover:bg-accent hover:text-foreground"
             >
               Movies
             </Link>
             <Link
               href="/series"
-              className="text-muted-foreground hover:text-foreground"
+              className="nav-link rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground hover:bg-accent hover:text-foreground"
             >
-              TV Shows
+              Series
             </Link>
           </nav>
-          <div>
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
+        </div>
+
+        <div className="mt-3 md:hidden">
+          <SearchBar placeholder="Find movies or series..." />
         </div>
       </div>
     </header>

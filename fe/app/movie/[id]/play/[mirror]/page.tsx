@@ -2,7 +2,6 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import MediaGrid from "@/components/media-grid";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Layout } from "@/components/layouts/layout";
 
 type MovieApiResponse = {
@@ -54,27 +53,19 @@ export default async function MovieMirrorPage({ params }: PageProps) {
       subtitle={`${details?.title ?? "Movie"} · ${mirrorLabel}`}
       backHref={`/movie/${id}`}
     >
-      <div className="mx-auto mt-4 max-w-7xl space-y-5 px-3 md:mt-5 md:px-4">
-        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+      <div className="page-shell mt-4 space-y-8 md:mt-5">
+        <section className="content-rail">
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <Badge className="rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+            <span className="soft-chip">
               {mirrorLabel}
-            </Badge>
+            </span>
             {year && (
-              <Badge
-                variant="outline"
-                className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
-              >
+              <span className="soft-chip">
                 {year}
-              </Badge>
+              </span>
             )}
             {rating && (
-              <Badge
-                variant="outline"
-                className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
-              >
-                ⭐ {rating}
-              </Badge>
+              <span className="soft-chip">{rating} / 10</span>
             )}
           </div>
 
@@ -85,14 +76,14 @@ export default async function MovieMirrorPage({ params }: PageProps) {
                 asChild
                 size="sm"
                 variant={mirrorKey === mirror ? "default" : "outline"}
-                className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
+                className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]"
               >
                 <Link href={`/movie/${id}/play/${mirrorKey}`}>{mirrorLabels[mirrorKey]}</Link>
               </Button>
             ))}
           </div>
 
-          <div className="aspect-video w-full overflow-hidden rounded-xl border border-border/60 bg-black">
+          <div className="aspect-video w-full overflow-hidden rounded-[var(--radius-panel)] border border-border bg-[color:var(--color-paper)]">
             <iframe
               src={embedUrl}
               title={details?.title}
@@ -105,7 +96,7 @@ export default async function MovieMirrorPage({ params }: PageProps) {
 
           <div className="mt-4 grid gap-3 text-sm text-muted-foreground md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <p className="leading-relaxed">{details?.overview}</p>
-            <div className="space-y-2 rounded-xl border border-border/60 bg-card/55 p-3 text-xs">
+            <div className="space-y-2 rounded-[var(--radius-card)] border border-border bg-card p-3 text-xs">
               {details?.genres?.length > 0 && (
                 <p>
                   <span className="font-semibold text-foreground">Genres:</span>{" "}
@@ -123,11 +114,11 @@ export default async function MovieMirrorPage({ params }: PageProps) {
         </section>
 
         {recommendations?.results?.length > 0 && (
-          <section className="cinema-panel rounded-2xl p-4 md:p-6">
+          <section className="content-rail">
             <MediaGrid
               items={recommendations.results}
               mediaType="movie"
-              title="Watch Next"
+              title="Watch next"
             />
           </section>
         )}
