@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 export default function TVMirrorLoading() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-8">
+      <div className="page-shell py-6 space-y-8">
         {/* HEADER */}
         <div className="flex items-center justify-between gap-3">
           <div className="space-y-2">
@@ -31,7 +31,7 @@ export default function TVMirrorLoading() {
         </div>
 
         {/* PLAYER */}
-        <div className="aspect-video w-full rounded-xl overflow-hidden border border-border/60 bg-black/70">
+        <div className="aspect-video w-full rounded-[var(--radius-panel)] overflow-hidden border border-border bg-[color:var(--color-paper)]">
           <Skeleton className="h-full w-full rounded-xl" />
         </div>
 
@@ -78,7 +78,7 @@ export default function TVMirrorLoading() {
         {/* RECOMMENDATIONS */}
         <section className="pb-8">
           <Skeleton className="h-6 w-56 mb-4" />
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+          <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-4 sm:grid-cols-[repeat(4,minmax(0,1fr))] md:grid-cols-[repeat(6,minmax(0,1fr))]">
             {Array.from({ length: 6 }).map((_, idx) => (
               <div key={idx} className="space-y-2">
                 <div className="w-full h-[180px] rounded-md overflow-hidden">

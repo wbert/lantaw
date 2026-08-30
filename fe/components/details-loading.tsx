@@ -8,7 +8,7 @@ export default function MovieDetailsLoading() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* HERO SKELETON */}
-      <section className="relative w-full h-[420px] md:h-[480px] overflow-hidden">
+      <section className="poster-hero page-shell h-[420px] md:h-[480px]">
         {/* Backdrop */}
         <div className="absolute inset-0">
           <Skeleton className="h-full w-full rounded-none" />
@@ -18,7 +18,7 @@ export default function MovieDetailsLoading() {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/10" />
 
         {/* Content */}
-        <div className="relative h-full max-w-6xl mx-auto px-4 md:px-6 flex items-center gap-6 md:gap-10">
+        <div className="relative h-full flex items-center gap-6 px-4 md:gap-10 md:px-6">
           {/* Poster skeleton (desktop) */}
           <div className="hidden md:block flex-shrink-0">
             <div className="relative w-[220px] aspect-[2/3] rounded-2xl overflow-hidden shadow-xl border border-border/60">
@@ -70,7 +70,7 @@ export default function MovieDetailsLoading() {
       </section>
 
       {/* MOBILE POSTER SKELETON */}
-      <section className="md:hidden max-w-6xl mx-auto px-4 md:px-6 mt-4">
+      <section className="page-shell mt-4 md:hidden">
         <div className="flex justify-center">
           <div className="relative w-[180px] aspect-[2/3] rounded-2xl overflow-hidden shadow-lg border border-border/60">
             <Skeleton className="h-full w-full rounded-2xl" />
@@ -79,7 +79,7 @@ export default function MovieDetailsLoading() {
       </section>
 
       {/* CAST SKELETON */}
-      <section className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-10 space-y-6">
+      <section className="page-shell space-y-6 py-8 md:py-10">
         <Skeleton className="h-6 w-32" />
 
         <div className="flex gap-4 overflow-x-auto pb-2">
@@ -96,10 +96,10 @@ export default function MovieDetailsLoading() {
       </section>
 
       {/* RECOMMENDATIONS SKELETON */}
-      <section className="max-w-6xl mx-auto px-4 md:px-6 pb-12">
+      <section className="page-shell pb-12">
         <Skeleton className="h-6 w-48 mb-4" />
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-4 sm:grid-cols-[repeat(4,minmax(0,1fr))] md:grid-cols-[repeat(6,minmax(0,1fr))]">
           {Array.from({ length: 6 }).map((_, idx) => (
             <div key={idx} className="space-y-2">
               <div className="w-full h-[180px] rounded-md overflow-hidden">

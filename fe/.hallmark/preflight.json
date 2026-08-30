@@ -1,0 +1,10 @@
+{
+  "date": "2026-06-27",
+  "font_stack": "Manrope + Bebas Neue via next/font",
+  "palette": "OKLCH custom properties in app/globals.css",
+  "motion": "motion-cut; no framer-motion/gsap/motion dependency detected",
+  "spacing": "Tailwind v4 utilities plus Hallmark 4-point tokens",
+  "framework": "Next.js 16 app router",
+  "preserve": ["next/font", "Tailwind v4", "shadcn token names", "TMDB imagery"],
+  "introduce": ["design.md", "tokens.css", "Workbench/Ecosystem Index product rhythm", "N13 adapted inline search", "Ft5 statement footer"]
+}

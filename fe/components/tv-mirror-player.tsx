@@ -5,7 +5,6 @@ import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import MediaGrid from "./media-grid";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -13,6 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  availableSources,
+  embedUrl,
+  preferredSource,
+  type PlayerSource,
+} from "@/lib/player-sources";
 
 type TmdbGenre = {
   id: number;
@@ -48,6 +53,7 @@ type TmdbTVDetails = {
   number_of_seasons: number;
   genres: TmdbGenre[];
   seasons: TmdbSeason[];
+  external_ids?: { imdb_id?: string | null };
 };
 
 type TVMirrorPlayerProps = {
@@ -57,37 +63,6 @@ type TVMirrorPlayerProps = {
   recommendations: { results: TmdbTVDetails[] };
   initialMirror?: string;
 };
-
-type MirrorConfig = {
-  id: string;
-  label: string;
-  buildUrl: (args: { tvId: number; season: number; episode: number }) => string;
-  note?: string;
-};
-
-const MIRRORS: MirrorConfig[] = [
-  {
-    id: "mirror-1",
-    label: "Mirror 1",
-    buildUrl: ({ tvId, season, episode }) =>
-      `https://vidlink.pro/tv/${tvId}/${season}/${episode}`,
-    note: "vidlink.pro",
-  },
-  {
-    id: "mirror-2",
-    label: "Mirror 2",
-    buildUrl: ({ tvId, season, episode }) =>
-      `https://vidsrc.cc/v2/embed/tv/${tvId}/${season}/${episode}?autoPlay=false`,
-    note: "vidsrc.cc",
-  },
-  {
-    id: "mirror-3",
-    label: "Mirror 3",
-    buildUrl: ({ tvId, season, episode }) =>
-      `https://vidsrc.to/embed/tv/${tvId}/${season}/${episode}`,
-    note: "vidsrc.to",
-  },
-];
 
 export default function TVMirrorPlayer({
   tvId,
@@ -112,13 +87,21 @@ export default function TVMirrorPlayer({
 
   const episodeCount = currentSeason?.episode_count ?? 1;
 
-  const [activeMirrorId, setActiveMirrorId] = useState<string>(
-    MIRRORS.some((m) => m.id === (initialMirror ?? ""))
-      ? (initialMirror as string)
-      : MIRRORS[0].id,
+  const imdbId = details.external_ids?.imdb_id ?? null;
+
+  const mirrors = useMemo<PlayerSource[]>(
+    () => availableSources("tv", imdbId),
+    [imdbId],
   );
 
-  const activeMirror = MIRRORS.find((m) => m.id === activeMirrorId) ?? MIRRORS[0];
+  const [activeMirrorId, setActiveMirrorId] = useState<string>(
+    mirrors.some((m) => m.id === (initialMirror ?? ""))
+      ? (initialMirror as string)
+      : preferredSource("tv", imdbId).id,
+  );
+
+  const activeMirror =
+    mirrors.find((m) => m.id === activeMirrorId) ?? preferredSource("tv", imdbId);
 
   useEffect(() => {
     if (episode > episodeCount) {
@@ -126,7 +109,12 @@ export default function TVMirrorPlayer({
     }
   }, [episodeCount, episode]);
 
-  const embedSrc = activeMirror.buildUrl({ tvId, season, episode });
+  const embedSrc = embedUrl(activeMirror, {
+    mediaId: tvId,
+    imdbId,
+    season,
+    episode,
+  });
 
   const firstAirYear = details.first_air_date?.slice(0, 4) ?? "";
   const lastAirYear = details.last_air_date?.slice(0, 4) ?? "";
@@ -142,42 +130,34 @@ export default function TVMirrorPlayer({
     ) ?? null;
 
   return (
-    <div className="mx-auto mt-4 max-w-7xl space-y-5 px-3 md:mt-5 md:px-4">
-      <section className="cinema-panel rounded-2xl p-4 md:p-6">
+    <div className="page-shell mt-4 space-y-8 md:mt-5">
+      <section className="content-rail">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-1">
             <h1 className="font-display text-4xl leading-none md:text-5xl">{details.name}</h1>
             <div className="flex flex-wrap gap-2">
               {airLabel && (
-                <Badge
-                  variant="outline"
-                  className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
-                >
+                <span className="soft-chip">
                   {airLabel}
-                </Badge>
+                </span>
               )}
-              <Badge
-                variant="outline"
-                className="rounded-full border-border/60 bg-card/60 px-3 py-1 text-[10px] uppercase tracking-[0.14em]"
-              >
-                ⭐ {details.vote_average.toFixed(1)}
-              </Badge>
+              <span className="soft-chip">{details.vote_average.toFixed(1)} / 10</span>
             </div>
           </div>
 
-          <Button variant="outline" size="sm" asChild className="rounded-full px-4 text-xs uppercase tracking-[0.14em]">
-            <Link href={`/tv/${tvId}`}>Back to Details</Link>
+          <Button variant="outline" size="sm" asChild className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]">
+            <Link href={`/tv/${tvId}`}>Details</Link>
           </Button>
         </div>
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          {MIRRORS.map((mirror) => (
+          {mirrors.map((mirror) => (
             <Button
               key={mirror.id}
               type="button"
               size="sm"
               variant={mirror.id === activeMirrorId ? "default" : "outline"}
-              className="rounded-full px-4 text-xs uppercase tracking-[0.14em]"
+              className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]"
               onClick={() => setActiveMirrorId(mirror.id)}
             >
               {mirror.label}
@@ -186,13 +166,13 @@ export default function TVMirrorPlayer({
           <span className="text-[11px] text-muted-foreground">Source: {activeMirror.note}</span>
         </div>
 
-        <div className="aspect-video w-full overflow-hidden rounded-xl border border-border/60 bg-black">
+        <div className="aspect-video w-full overflow-hidden rounded-[var(--radius-panel)] border border-border bg-[color:var(--color-paper)]">
           <iframe
             src={embedSrc}
             title={`${details.name} - S${season}E${episode} (${activeMirror.label})`}
             className="h-full w-full"
             referrerPolicy="origin"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
             allowFullScreen
           />
         </div>
@@ -217,7 +197,7 @@ export default function TVMirrorPlayer({
             )}
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-card/55 p-3 text-xs text-muted-foreground">
+          <div className="rounded-[var(--radius-card)] border border-border bg-card p-3 text-xs text-muted-foreground">
             <p>{genres}</p>
             <p className="mt-2">
               {details.number_of_seasons} seasons · {details.number_of_episodes} episodes
@@ -226,10 +206,10 @@ export default function TVMirrorPlayer({
         </div>
       </section>
 
-      <section className="cinema-panel rounded-2xl p-4 md:p-6">
+      <section className="content-rail">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="font-display text-3xl leading-none md:text-4xl">Season Picker</h2>
+            <h2 className="font-display text-3xl leading-none md:text-4xl">Season picker</h2>
             {currentSeason && (
               <p className="mt-1 text-xs text-muted-foreground">
                 Season {currentSeason.season_number} · {currentSeason.episode_count} episodes
@@ -241,7 +221,7 @@ export default function TVMirrorPlayer({
             value={season.toString()}
             onValueChange={(value) => setSeason(parseInt(value, 10))}
           >
-            <SelectTrigger className="w-full rounded-full border-border/60 bg-card/65 sm:w-[250px]">
+            <SelectTrigger className="min-h-11 w-full rounded-full border-border bg-card sm:w-[250px]">
               <SelectValue placeholder="Select season" />
             </SelectTrigger>
             <SelectContent>
@@ -265,7 +245,7 @@ export default function TVMirrorPlayer({
                 type="button"
                 size="sm"
                 variant={isActive ? "default" : "outline"}
-                className="rounded-full px-3 text-xs uppercase tracking-[0.12em]"
+                className="control-label rounded-full px-3 text-xs font-semibold uppercase tracking-[0.12em]"
                 onClick={() => setEpisode(epNo)}
               >
                 Ep {epNo}
@@ -276,11 +256,11 @@ export default function TVMirrorPlayer({
       </section>
 
       {recommendations.results?.length > 0 && (
-        <section className="cinema-panel rounded-2xl p-4 md:p-6">
+        <section className="content-rail">
           <MediaGrid
             items={recommendations.results}
             mediaType="tv"
-            title="Watch Next"
+            title="Watch next"
           />
         </section>
       )}
