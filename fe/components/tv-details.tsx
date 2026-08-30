@@ -4,6 +4,7 @@ import Link from "next/link";
 import MediaGrid from "./media-grid";
 import { Button } from "@/components/ui/button";
 import { Layout } from "./layouts/layout";
+import { availableSources } from "@/lib/player-sources";
 
 type TmdbGenre = {
   id: number;
@@ -71,7 +72,8 @@ export default function TVDetails({
     ? `https://image.tmdb.org/t/p/original${details.backdrop_path}`
     : null;
 
-  const posterUrl = details.poster_path
+  const hasPoster = Boolean(details.poster_path);
+  const posterUrl = hasPoster
     ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
     : "/logo.svg";
 
@@ -105,7 +107,12 @@ export default function TVDetails({
           <div className="relative z-10 grid gap-6 md:grid-cols-[220px_minmax(0,1fr)] md:items-end">
             <div className="mx-auto w-[180px] md:mx-0 md:w-[220px]">
               <div className="relative aspect-[2/3] overflow-hidden rounded-[var(--radius-card)] border border-[color:var(--color-rule)] bg-[color:var(--color-paper-2)]">
-                <Image src={posterUrl} alt={details.name} fill className="object-cover" />
+                <Image
+                  src={posterUrl}
+                  alt={details.name}
+                  fill
+                  className={hasPoster ? "object-cover" : "bg-[color:var(--color-mark-ground)] object-contain p-8"}
+                />
               </div>
             </div>
 
@@ -142,25 +149,21 @@ export default function TVDetails({
               </div>
 
               <div className="flex flex-wrap items-center gap-2 pt-1">
-                <Button asChild size="sm" className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]">
-                  <Link href={`/tv/${details.id}/play/mirror-1`}>Play 1</Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                  className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]"
-                >
-                  <Link href={`/tv/${details.id}/play/mirror-2`}>Play 2</Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                  className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]"
-                >
-                  <Link href={`/tv/${details.id}/play/mirror-3`}>Play 3</Link>
-                </Button>
+                {availableSources("tv", details.external_ids?.imdb_id).map(
+                  (source, index) => (
+                    <Button
+                      key={source.id}
+                      asChild
+                      size="sm"
+                      variant={index === 0 ? "default" : "outline"}
+                      className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]"
+                    >
+                      <Link href={`/tv/${details.id}/play/${source.id}`}>
+                        Play {index + 1}
+                      </Link>
+                    </Button>
+                  ),
+                )}
 
                 {trailer && (
                   <Button
@@ -189,7 +192,8 @@ export default function TVDetails({
 
             <div className="flex gap-3 overflow-x-auto pb-2">
               {topCast.map((person) => {
-                const avatar = person.profile_path
+                const hasAvatar = Boolean(person.profile_path);
+                const avatar = hasAvatar
                   ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
                   : "/logo.svg";
 
@@ -199,7 +203,12 @@ export default function TVDetails({
                     className="w-32 flex-shrink-0 rounded-[var(--radius-card)] border border-border bg-card p-2 text-center"
                   >
                     <div className="relative mx-auto mb-2 h-20 w-20 overflow-hidden rounded-full border border-border/60">
-                      <Image src={avatar} alt={person.name} fill className="object-cover" />
+                      <Image
+                        src={avatar}
+                        alt={person.name}
+                        fill
+                        className={hasAvatar ? "object-cover" : "bg-[color:var(--color-mark-ground)] object-contain p-3"}
+                      />
                     </div>
                     <p className="truncate text-xs font-semibold">{person.name}</p>
                     {person.character && (

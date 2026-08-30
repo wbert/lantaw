@@ -13,17 +13,22 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  const isDark = mounted ? (theme === "system" ? resolvedTheme === "dark" : theme === "dark") : true;
+  const isDark = mounted
+    ? theme === "system"
+      ? resolvedTheme === "dark"
+      : theme === "dark"
+    : true;
 
   return (
     <Button
       variant="outline"
       size="icon"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="size-9 rounded-full border-border/60 bg-card/70 hover:bg-accent/70"
-      aria-label="Toggle theme"
+      className="size-11 rounded-full border-border bg-card hover:bg-accent"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
     </Button>
   );
 }

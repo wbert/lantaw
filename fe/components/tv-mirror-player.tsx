@@ -12,6 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  availableSources,
+  embedUrl,
+  preferredSource,
+  type PlayerSource,
+} from "@/lib/player-sources";
 
 type TmdbGenre = {
   id: number;
@@ -47,6 +53,7 @@ type TmdbTVDetails = {
   number_of_seasons: number;
   genres: TmdbGenre[];
   seasons: TmdbSeason[];
+  external_ids?: { imdb_id?: string | null };
 };
 
 type TVMirrorPlayerProps = {
@@ -56,37 +63,6 @@ type TVMirrorPlayerProps = {
   recommendations: { results: TmdbTVDetails[] };
   initialMirror?: string;
 };
-
-type MirrorConfig = {
-  id: string;
-  label: string;
-  buildUrl: (args: { tvId: number; season: number; episode: number }) => string;
-  note?: string;
-};
-
-const MIRRORS: MirrorConfig[] = [
-  {
-    id: "mirror-1",
-    label: "Mirror 1",
-    buildUrl: ({ tvId, season, episode }) =>
-      `https://vidlink.pro/tv/${tvId}/${season}/${episode}`,
-    note: "vidlink.pro",
-  },
-  {
-    id: "mirror-2",
-    label: "Mirror 2",
-    buildUrl: ({ tvId, season, episode }) =>
-      `https://vidsrc.cc/v2/embed/tv/${tvId}/${season}/${episode}?autoPlay=false`,
-    note: "vidsrc.cc",
-  },
-  {
-    id: "mirror-3",
-    label: "Mirror 3",
-    buildUrl: ({ tvId, season, episode }) =>
-      `https://vidsrc.to/embed/tv/${tvId}/${season}/${episode}`,
-    note: "vidsrc.to",
-  },
-];
 
 export default function TVMirrorPlayer({
   tvId,
@@ -111,13 +87,21 @@ export default function TVMirrorPlayer({
 
   const episodeCount = currentSeason?.episode_count ?? 1;
 
-  const [activeMirrorId, setActiveMirrorId] = useState<string>(
-    MIRRORS.some((m) => m.id === (initialMirror ?? ""))
-      ? (initialMirror as string)
-      : MIRRORS[0].id,
+  const imdbId = details.external_ids?.imdb_id ?? null;
+
+  const mirrors = useMemo<PlayerSource[]>(
+    () => availableSources("tv", imdbId),
+    [imdbId],
   );
 
-  const activeMirror = MIRRORS.find((m) => m.id === activeMirrorId) ?? MIRRORS[0];
+  const [activeMirrorId, setActiveMirrorId] = useState<string>(
+    mirrors.some((m) => m.id === (initialMirror ?? ""))
+      ? (initialMirror as string)
+      : preferredSource("tv", imdbId).id,
+  );
+
+  const activeMirror =
+    mirrors.find((m) => m.id === activeMirrorId) ?? preferredSource("tv", imdbId);
 
   useEffect(() => {
     if (episode > episodeCount) {
@@ -125,7 +109,12 @@ export default function TVMirrorPlayer({
     }
   }, [episodeCount, episode]);
 
-  const embedSrc = activeMirror.buildUrl({ tvId, season, episode });
+  const embedSrc = embedUrl(activeMirror, {
+    mediaId: tvId,
+    imdbId,
+    season,
+    episode,
+  });
 
   const firstAirYear = details.first_air_date?.slice(0, 4) ?? "";
   const lastAirYear = details.last_air_date?.slice(0, 4) ?? "";
@@ -162,7 +151,7 @@ export default function TVMirrorPlayer({
         </div>
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          {MIRRORS.map((mirror) => (
+          {mirrors.map((mirror) => (
             <Button
               key={mirror.id}
               type="button"
@@ -183,7 +172,7 @@ export default function TVMirrorPlayer({
             title={`${details.name} - S${season}E${episode} (${activeMirror.label})`}
             className="h-full w-full"
             referrerPolicy="origin"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
             allowFullScreen
           />
         </div>

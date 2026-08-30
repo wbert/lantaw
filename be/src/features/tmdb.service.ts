@@ -51,7 +51,12 @@ export class TmdbService {
   }
 
   details(type: 'movie' | 'tv', id: number) {
-    return this.get(`/${type}/${id}`, { language: 'en-US' });
+    // external_ids carries the IMDb id, which /tv/{id} omits and the
+    // IMDb-indexed mirrors need to address the title.
+    return this.get(`/${type}/${id}`, {
+      language: 'en-US',
+      append_to_response: 'external_ids',
+    });
   }
 
   credits(type: 'movie' | 'tv', id: number) {

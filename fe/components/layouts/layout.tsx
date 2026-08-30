@@ -50,6 +50,7 @@ export function Layout({
                   alt="Lantaw"
                   width={34}
                   height={34}
+                  className="rounded-full bg-[color:var(--color-mark-ground)] p-1 ring-1 ring-border"
                 />
                 <div>
                   <p className="wordmark text-2xl leading-none">Lantaw</p>
@@ -72,7 +73,7 @@ export function Layout({
                 ))}
               </nav>
 
-              <div className="ml-auto hidden w-[min(36vw,28rem)] xl:block">
+              <div className="ml-auto hidden w-[clamp(18rem,30vw,26rem)] xl:block">
                 <SearchBar placeholder="Find movies or series..." />
               </div>
 

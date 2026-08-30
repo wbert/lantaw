@@ -3,6 +3,7 @@ import { api } from "@/lib/api";
 import MediaGrid from "@/components/media-grid";
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layouts/layout";
+import { availableSources, embedUrl, resolveSource } from "@/lib/player-sources";
 
 type MovieApiResponse = {
   details: any;
@@ -17,29 +18,17 @@ type PageProps = {
 
 export const revalidate = 60;
 
-const movieMirrorBase: Record<string, (id: string) => string> = {
-  "mirror-1": (id) => `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=false`,
-  "mirror-2": (id) => `https://vidlink.pro/movie/${id}`,
-  "mirror-3": (id) => `https://vidsrc.to/embed/movie/${id}`,
-};
-
-const mirrorLabels: Record<string, string> = {
-  "mirror-1": "Mirror 1",
-  "mirror-2": "Mirror 2",
-  "mirror-3": "Mirror 3",
-};
-
-const mirrorKeys = ["mirror-1", "mirror-2", "mirror-3"];
-
 export default async function MovieMirrorPage({ params }: PageProps) {
   const { id, mirror } = await params;
 
   const data = await api<MovieApiResponse>(`/v1/media/movie/${id}`);
   const { details, recommendations } = data;
 
-  const buildUrl = movieMirrorBase[mirror] ?? movieMirrorBase["mirror-1"];
-  const embedUrl = buildUrl(id);
-  const mirrorLabel = mirrorLabels[mirror] ?? "Mirror 1";
+  const imdbId: string | null = details?.imdb_id ?? details?.external_ids?.imdb_id ?? null;
+  const mirrors = availableSources("movie", imdbId);
+  const activeMirror = resolveSource("movie", mirror, imdbId);
+  const embedSrc = embedUrl(activeMirror, { mediaId: id, imdbId });
+  const mirrorLabel = activeMirror.label;
 
   const year = details?.release_date?.slice(0, 4) ?? "";
   const rating =
@@ -70,26 +59,26 @@ export default async function MovieMirrorPage({ params }: PageProps) {
           </div>
 
           <div className="mb-4 flex flex-wrap gap-2">
-            {mirrorKeys.map((mirrorKey) => (
+            {mirrors.map((source) => (
               <Button
-                key={mirrorKey}
+                key={source.id}
                 asChild
                 size="sm"
-                variant={mirrorKey === mirror ? "default" : "outline"}
+                variant={source.id === activeMirror.id ? "default" : "outline"}
                 className="control-label rounded-full px-4 text-xs font-semibold uppercase tracking-[0.12em]"
               >
-                <Link href={`/movie/${id}/play/${mirrorKey}`}>{mirrorLabels[mirrorKey]}</Link>
+                <Link href={`/movie/${id}/play/${source.id}`}>{source.label}</Link>
               </Button>
             ))}
           </div>
 
           <div className="aspect-video w-full overflow-hidden rounded-[var(--radius-panel)] border border-border bg-[color:var(--color-paper)]">
             <iframe
-              src={embedUrl}
+              src={embedSrc}
               title={details?.title}
               className="h-full w-full"
               referrerPolicy="origin"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
               allowFullScreen
             />
           </div>

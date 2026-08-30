@@ -76,7 +76,8 @@ export default function MediaGrid({
 
       <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-4 sm:grid-cols-[repeat(3,minmax(0,1fr))] md:grid-cols-[repeat(4,minmax(0,1fr))] lg:grid-cols-[repeat(6,minmax(0,1fr))]">
         {items.map((item) => {
-          const imgSrc = item.poster_path
+          const hasPoster = Boolean(item.poster_path);
+          const imgSrc = hasPoster
             ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
             : "/logo.svg";
 
@@ -100,7 +101,10 @@ export default function MediaGrid({
                     alt={displayTitle}
                     fill
                     sizes="(min-width: 1024px) 15vw, (min-width: 768px) 24vw, 50vw"
-                    className="object-cover"
+                    className={cn(
+                      "bg-[color:var(--color-mark-ground)]",
+                      hasPoster ? "object-cover" : "object-contain p-8",
+                    )}
                     loading="lazy"
                     placeholder="blur"
                     blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzAwIiBoZWlnaHQ9IjQ3NSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIi8+"
